@@ -59,15 +59,22 @@ public class CommandBodyguard extends CommandBase
             else if (args.length > 2 && args[0].equals("set")) {
                 String setting = args[1], value = args[2];
                 // TODO: try to read value as integer, then fall back to string
+                // TODO: better way to handle string (multiple quoted words) and booleans
                 switch (setting) {
                 case "behaviour":
                     troop.getSettings().setBehaviour(Behaviour.get(value));
+                    break;
+                case "displayName":
+                    troop.getSettings().setDisplayName(!value.equals("0"));
                     break;
                 case "follow":
                     troop.getSettings().setFollow(!value.equals("0"));
                     break;
                 case "formation":
                     troop.getSettings().setFormation(Formation.get(value));
+                    break;
+                case "nameFormat":
+                    troop.getSettings().setNameFormat(value);
                     break;
                 case "size":
                     troop.getSettings().setSize(Double.parseDouble(value));
@@ -98,8 +105,8 @@ public class CommandBodyguard extends CommandBase
     {
         if (args[0].equals("set")) {
             if (args.length == 2) {
-                return getListOfStringsMatchingLastWord(args,
-                        Arrays.asList("master", "follow", "formation", "size", "behaviour"));
+                return getListOfStringsMatchingLastWord(args, Arrays.asList("master", "behaviour", "displayName",
+                        "follow", "formation", "nameFormat", "size"));
             } else if (args.length == 3) {
                 List<String> possibilities = new ArrayList<String>();
                 switch (args[1]) {

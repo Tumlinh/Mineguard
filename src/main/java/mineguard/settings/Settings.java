@@ -13,14 +13,43 @@ public class Settings
 
     // Settings
     private Behaviour behaviour = Behaviour.DEFENSIVE;
+    private boolean displayName = true;
     private boolean follow = true;
     private Formation formation = Formation.SQUARE;
+    private String nameFormat = "Agent%d";
     private double size = 10.0;
 
     public Settings(Troop troop)
     {
         this.troop = troop;
         this.readFromNBT();
+    }
+
+    public Behaviour getBehaviour()
+    {
+        return behaviour;
+    }
+
+    public void setBehaviour(Behaviour behaviour)
+    {
+        if (this.behaviour != behaviour) {
+            this.behaviour = behaviour;
+            this.writeToNBT();
+        }
+    }
+
+    public boolean isDisplayName()
+    {
+        return displayName;
+    }
+
+    public void setDisplayName(boolean displayName)
+    {
+        if (this.displayName != displayName) {
+            this.displayName = displayName;
+            this.writeToNBT();
+            troop.updateNames();
+        }
     }
 
     public boolean isFollowing()
@@ -52,6 +81,20 @@ public class Settings
         troop.reform();
     }
 
+    public String getNameFormat()
+    {
+        return nameFormat;
+    }
+
+    public void setNameFormat(String nameFormat)
+    {
+        if (this.nameFormat != nameFormat) {
+            this.nameFormat = nameFormat;
+            this.writeToNBT();
+            troop.updateNames();
+        }
+    }
+
     public double getSize()
     {
         return size;
@@ -66,26 +109,15 @@ public class Settings
         troop.reform();
     }
 
-    public Behaviour getBehaviour()
-    {
-        return behaviour;
-    }
-
-    public void setBehaviour(Behaviour behaviour)
-    {
-        if (this.behaviour != behaviour) {
-            this.behaviour = behaviour;
-            this.writeToNBT();
-        }
-    }
-
     public void writeToNBT()
     {
         // Build player settings
         NBTTagCompound playerSettings = new NBTTagCompound();
         playerSettings.setByte("Behaviour", (byte) Behaviour.get(behaviour.getText()).getId());
+        playerSettings.setBoolean("DisplayName", displayName);
         playerSettings.setBoolean("Follow", follow);
         playerSettings.setByte("Formation", (byte) Formation.get(formation.getText()).getId());
+        playerSettings.setString("NameFormat", nameFormat);
         playerSettings.setDouble("Size", size);
 
         // Read full settings from NBT
@@ -124,10 +156,14 @@ public class Settings
         compound = compound.getCompoundTag(troop.getMasterName());
         if (compound.hasKey("Behaviour"))
             behaviour = Behaviour.get(compound.getByte("Behaviour"));
+        if (compound.hasKey("DisplayName"))
+            displayName = compound.getBoolean("DisplayName");
         if (compound.hasKey("Follow"))
             follow = compound.getBoolean("Follow");
         if (compound.hasKey("Formation"))
             formation = Formation.get(compound.getByte("Formation"));
+        if (compound.hasKey("NameFormat"))
+            nameFormat = compound.getString("NameFormat");
         if (compound.hasKey("Size"))
             size = compound.getDouble("Size");
     }
@@ -135,7 +171,7 @@ public class Settings
     @Override
     public String toString()
     {
-        return "follow=" + follow + " formation=" + formation.getText() + " size=" + size + " behaviour="
-                + behaviour.getText();
+        return "follow=" + follow + " displayName=" + displayName + " formation=" + formation.getText()
+                + " nameFormat='" + nameFormat + "' size=" + size + " behaviour=" + behaviour.getText();
     }
 }

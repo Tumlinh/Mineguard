@@ -6,7 +6,6 @@ import mineguard.entity.EntityBodyguard;
 import mineguard.init.ModConfig;
 import mineguard.settings.*;
 import mineguard.util.EntityUtil;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -76,7 +75,7 @@ public class Troop
     public void removeBodyguards()
     {
         // TODO: rm troop completely?
-        for (Entity bodyguard : bodyguards.values())
+        for (EntityBodyguard bodyguard : bodyguards.values())
             bodyguard.setDead();
         bodyguards.clear();
         maxIndex = -1;
@@ -133,12 +132,16 @@ public class Troop
         return false;
     }
 
+    public void updateNames()
+    {
+        for (EntityBodyguard bodyguard : bodyguards.values())
+            bodyguard.updateName();
+    }
+
     @Override
     public String toString()
     {
-        String ret = "master=" + masterName + " " + settings + "\n";
-        for (EntityBodyguard bodyguard : bodyguards.values())
-            ret += bodyguard + "\n";
+        String ret = "master=" + masterName + " " + settings + "\nbg_count=" + bodyguards.size();
         return ret;
     }
 }

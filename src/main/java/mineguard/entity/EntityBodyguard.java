@@ -1,5 +1,7 @@
 package mineguard.entity;
 
+import java.util.IllegalFormatException;
+
 import mineguard.Troop;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIFollowMaster;
@@ -50,8 +52,7 @@ public class EntityBodyguard extends EntityWitherSkeleton
         this.enablePersistence();
 
         // Name bodyguard
-        this.setCustomNameTag("Agent " + Integer.toString(index));
-        this.setAlwaysRenderNameTag(true);
+        this.updateName();
 
         // Put on armor
         this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
@@ -77,6 +78,16 @@ public class EntityBodyguard extends EntityWitherSkeleton
     {
         if (troop != null)
             troop.reformBodyguard(index);
+    }
+
+    public void updateName()
+    {
+        try {
+            this.setCustomNameTag(String.format(troop.getSettings().getNameFormat(), index));
+        } catch (IllegalFormatException e) {
+            System.out.println(troop.getSettings().getNameFormat());
+        }
+        this.setAlwaysRenderNameTag(troop.getSettings().isDisplayName());
     }
 
     @Override
@@ -123,6 +134,11 @@ public class EntityBodyguard extends EntityWitherSkeleton
     public boolean canDropLoot()
     {
         return false;
+    }
+
+    @Override
+    public void playLivingSound()
+    {
     }
 
     @Override
