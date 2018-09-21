@@ -33,7 +33,7 @@ public class CommandBodyguard extends CommandBase
     @Override
     public String getUsage(ICommandSender sender)
     {
-        return "/bg <info|mk|rm|rs|set>";
+        return "/bg <info|give|mk|rm|rs|set>";
     }
 
     @Override
@@ -54,6 +54,11 @@ public class CommandBodyguard extends CommandBase
             // Remove bodyguards
             else if (args.length == 1 && args[0].equals("rm")) {
                 troop.removeBodyguards();
+            }
+
+            // Give bodyguards
+            else if (args.length == 2 && args[0].equals("give")) {
+                troop.give(args[1]);
             }
 
             // Change settings
@@ -109,8 +114,8 @@ public class CommandBodyguard extends CommandBase
     {
         if (args[0].equals("set")) {
             if (args.length == 2) {
-                return getListOfStringsMatchingLastWord(args, Arrays.asList("master", "behaviour", "color",
-                        "displayName", "follow", "formation", "nameFormat", "size"));
+                return getListOfStringsMatchingLastWord(args, Arrays.asList("behaviour", "color", "displayName",
+                        "follow", "formation", "nameFormat", "size"));
             } else if (args.length == 3) {
                 List<String> possibilities = new ArrayList<String>();
                 switch (args[1]) {
@@ -129,12 +134,11 @@ public class CommandBodyguard extends CommandBase
                 }
                 return getListOfStringsMatchingLastWord(args, possibilities);
             }
+        } else if (args[0].equals("give")) {
+            if (args.length == 2)
+                return getListOfStringsMatchingLastWord(args,
+                        Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getOnlinePlayerNames()));
         }
         return new ArrayList<String>();
-    }
-
-    public static String[] getStringFromEnum(Class<? extends Enum<?>> e)
-    {
-        return Arrays.stream(e.getEnumConstants()).map(Enum::name).toArray(String[]::new);
     }
 }

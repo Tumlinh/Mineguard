@@ -69,9 +69,19 @@ public class EntityBodyguard extends EntityWitherSkeleton
         return index;
     }
 
+    public void setIndex(int index)
+    {
+        this.index = index;
+    }
+
     public Troop getTroop()
     {
         return troop;
+    }
+
+    public void setTroop(Troop troop)
+    {
+        this.troop = troop;
     }
 
     public void reform()
@@ -95,7 +105,6 @@ public class EntityBodyguard extends EntityWitherSkeleton
         ItemStack helmet = new ItemStack(Items.LEATHER_HELMET);
 
         // Make helmet unbreakable
-        //helmet.getItem().setMaxDamage(0);
         NBTTagCompound compound = new NBTTagCompound();
         compound.setBoolean("Unbreakable", true);
         helmet.setTagCompound(compound);

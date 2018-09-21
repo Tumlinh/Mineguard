@@ -77,6 +77,11 @@ public class Troop
         // TODO: rm troop completely?
         for (EntityBodyguard bodyguard : bodyguards.values())
             bodyguard.setDead();
+        this.resetBodyguards();
+    }
+
+    private void resetBodyguards()
+    {
         bodyguards.clear();
         maxIndex = -1;
     }
@@ -92,6 +97,10 @@ public class Troop
     // Handle bodyguard movements inside a formation
     public boolean reformBodyguard(int bgIndex)
     {
+        EntityBodyguard bodyguard = bodyguards.get(bgIndex);
+        if (master == null || bodyguard == null)
+            return false;
+
         double posX = 0, posY = master.posY, posZ = 0;
         double perimeter, linearPos;
         double size = settings.getSize();
@@ -101,7 +110,7 @@ public class Troop
             perimeter = 8 * size;
             linearPos = perimeter * bgIndex / bodyguards.size();
 
-            // Compatible with the circle algo
+            // Compatible with the circle formation
             if (linearPos < size) {
                 posX = master.posX + size;
                 posZ = master.posZ - linearPos;
@@ -126,10 +135,7 @@ public class Troop
             posZ = master.posZ - size * Math.sin(linearPos);
         }
 
-        EntityBodyguard bodyguard = bodyguards.get(bgIndex);
-        if (bodyguard != null)
-            return bodyguard.getNavigator().tryMoveToXYZ(posX, posY, posZ, ModConfig.BODYGUARD_SPEED_TARGET);
-        return false;
+        return bodyguard.getNavigator().tryMoveToXYZ(posX, posY, posZ, ModConfig.BODYGUARD_SPEED_TARGET);
     }
 
     public void updateNames()
@@ -142,6 +148,26 @@ public class Troop
     {
         for (EntityBodyguard bodyguard : bodyguards.values())
             bodyguard.putOnColorizedHelmet();
+    }
+
+    public void give(String name)
+    {
+        if (masterName != name) {
+            Troop receivingTroop = Troop.getTroop(name);
+
+            // Update bodyguards
+            for (EntityBodyguard bodyguard : bodyguards.values()) {
+                // XXX: no need to change bg's master, this is done by writeToNBT()
+                bodyguard.setIndex(receivingTroop.maxIndex + 1);
+                bodyguard.setTroop(receivingTroop);
+                bodyguard.updateName();
+                bodyguard.putOnColorizedHelmet();
+
+                receivingTroop.addBodyguard(bodyguard);
+            }
+
+            this.resetBodyguards();
+        }
     }
 
     @Override
