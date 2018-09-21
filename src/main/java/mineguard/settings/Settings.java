@@ -13,6 +13,7 @@ public class Settings
 
     // Settings
     private Behaviour behaviour = Behaviour.DEFENSIVE;
+    private int color = 0x009900;
     private boolean displayName = true;
     private boolean follow = true;
     private Formation formation = Formation.SQUARE;
@@ -35,6 +36,20 @@ public class Settings
         if (this.behaviour != behaviour) {
             this.behaviour = behaviour;
             this.writeToNBT();
+        }
+    }
+
+    public int getColor()
+    {
+        return color;
+    }
+
+    public void setColor(int color)
+    {
+        if (this.color != color) {
+            this.color = color;
+            this.writeToNBT();
+            troop.updateHelmets();
         }
     }
 
@@ -114,6 +129,7 @@ public class Settings
         // Build player settings
         NBTTagCompound playerSettings = new NBTTagCompound();
         playerSettings.setByte("Behaviour", (byte) Behaviour.get(behaviour.getText()).getId());
+        playerSettings.setInteger("Color", color);
         playerSettings.setBoolean("DisplayName", displayName);
         playerSettings.setBoolean("Follow", follow);
         playerSettings.setByte("Formation", (byte) Formation.get(formation.getText()).getId());
@@ -156,6 +172,8 @@ public class Settings
         compound = compound.getCompoundTag(troop.getMasterName());
         if (compound.hasKey("Behaviour"))
             behaviour = Behaviour.get(compound.getByte("Behaviour"));
+        if (compound.hasKey("Color"))
+            color = compound.getInteger("Color");
         if (compound.hasKey("DisplayName"))
             displayName = compound.getBoolean("DisplayName");
         if (compound.hasKey("Follow"))
@@ -171,7 +189,8 @@ public class Settings
     @Override
     public String toString()
     {
-        return "follow=" + follow + " displayName=" + displayName + " formation=" + formation.getText()
-                + " nameFormat='" + nameFormat + "' size=" + size + " behaviour=" + behaviour.getText();
+        return "follow=" + follow + " color=" + color + " displayName=" + displayName + " formation="
+                + formation.getText() + " nameFormat='" + nameFormat + "' size=" + size + " behaviour="
+                + behaviour.getText();
     }
 }

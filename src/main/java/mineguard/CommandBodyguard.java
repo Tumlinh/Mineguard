@@ -1,5 +1,6 @@
 package mineguard;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -64,6 +65,9 @@ public class CommandBodyguard extends CommandBase
                 case "behaviour":
                     troop.getSettings().setBehaviour(Behaviour.get(value));
                     break;
+                case "color":
+                    troop.getSettings().setColor(Color.decode(value).getRGB());
+                    break;
                 case "displayName":
                     troop.getSettings().setDisplayName(!value.equals("0"));
                     break;
@@ -105,8 +109,8 @@ public class CommandBodyguard extends CommandBase
     {
         if (args[0].equals("set")) {
             if (args.length == 2) {
-                return getListOfStringsMatchingLastWord(args, Arrays.asList("master", "behaviour", "displayName",
-                        "follow", "formation", "nameFormat", "size"));
+                return getListOfStringsMatchingLastWord(args, Arrays.asList("master", "behaviour", "color",
+                        "displayName", "follow", "formation", "nameFormat", "size"));
             } else if (args.length == 3) {
                 List<String> possibilities = new ArrayList<String>();
                 switch (args[1]) {

@@ -58,8 +58,8 @@ public class EntityBodyguard extends EntityWitherSkeleton
         this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
         this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(Items.DIAMOND_BOOTS));
         this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE));
-        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(Items.DIAMOND_HELMET));
         this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.DIAMOND_LEGGINGS));
+        this.putOnColorizedHelmet();
 
         ((PathNavigateGround) this.getNavigator()).setCanSwim(true);
     }
@@ -88,6 +88,13 @@ public class EntityBodyguard extends EntityWitherSkeleton
             System.out.println(troop.getSettings().getNameFormat());
         }
         this.setAlwaysRenderNameTag(troop.getSettings().isDisplayName());
+    }
+
+    public void putOnColorizedHelmet()
+    {
+        ItemStack helmet = new ItemStack(Items.LEATHER_HELMET);
+        Items.LEATHER_HELMET.setColor(helmet, troop.getSettings().getColor());
+        this.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
     }
 
     @Override

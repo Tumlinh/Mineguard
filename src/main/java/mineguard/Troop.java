@@ -138,6 +138,12 @@ public class Troop
             bodyguard.updateName();
     }
 
+    public void updateHelmets()
+    {
+        for (EntityBodyguard bodyguard : bodyguards.values())
+            bodyguard.putOnColorizedHelmet();
+    }
+
     @Override
     public String toString()
     {
