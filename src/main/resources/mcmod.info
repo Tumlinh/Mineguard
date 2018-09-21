@@ -1,0 +1,16 @@
+[
+{
+  "modid": "mineguard",
+  "name": "Mineguard",
+  "description": "Hang out with an army of bodyguards protecting you",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://github.com/Tumlinh/Mineguard",
+  "updateUrl": "https://github.com/Tumlinh/Mineguard",
+  "authorList": ["Tumlinh"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
