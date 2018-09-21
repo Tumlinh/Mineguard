@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class EntityBodyguard extends EntityWitherSkeleton
 {
-    private int index;
+    private int id;
     private Troop troop;
 
     // State variable for reforming the bodyguard once it touches the ground
@@ -40,10 +40,10 @@ public class EntityBodyguard extends EntityWitherSkeleton
     }
 
     // Called when spawning new bodyguards as part of a troop
-    public EntityBodyguard(World worldIn, int index, Troop troop)
+    public EntityBodyguard(World worldIn, int id, Troop troop)
     {
         super(worldIn);
-        this.index = index;
+        this.id = id;
         this.troop = troop;
         hasTouchedGround = this.onGround;
         if (troop != null)
@@ -64,14 +64,14 @@ public class EntityBodyguard extends EntityWitherSkeleton
         ((PathNavigateGround) this.getNavigator()).setCanSwim(true);
     }
 
-    public int getIndex()
+    public int getId()
     {
-        return index;
+        return id;
     }
 
-    public void setIndex(int index)
+    public void setId(int id)
     {
-        this.index = index;
+        this.id = id;
     }
 
     public Troop getTroop()
@@ -87,13 +87,13 @@ public class EntityBodyguard extends EntityWitherSkeleton
     public void reform()
     {
         if (troop != null)
-            troop.reformBodyguard(index);
+            troop.reformBodyguard(troop.getBodyguardPos(this));
     }
 
     public void updateName()
     {
         try {
-            this.setCustomNameTag(String.format(troop.getSettings().getNameFormat(), index));
+            this.setCustomNameTag(String.format(troop.getSettings().getNameFormat(), id));
         } catch (IllegalFormatException e) {
             System.out.println(troop.getSettings().getNameFormat());
         }
@@ -168,8 +168,8 @@ public class EntityBodyguard extends EntityWitherSkeleton
     public void readEntityFromNBT(NBTTagCompound compound)
     {
         super.readEntityFromNBT(compound);
-        if (compound.hasKey("Index", new NBTTagInt(0).getId())) {
-            index = compound.getInteger("Index");
+        if (compound.hasKey("Id", new NBTTagInt(0).getId())) {
+            id = compound.getInteger("Id");
         }
         if (compound.hasKey("Master", new NBTTagString().getId())) {
             troop = Troop.getTroop(compound.getString("Master"));
@@ -184,7 +184,7 @@ public class EntityBodyguard extends EntityWitherSkeleton
     {
         super.writeEntityToNBT(compound);
         if (troop != null) {
-            compound.setInteger("Index", index);
+            compound.setInteger("Id", id);
             compound.setString("Master", troop.getMasterName());
         }
     }

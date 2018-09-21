@@ -1,6 +1,10 @@
 package mineguard;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import mineguard.entity.EntityBodyguard;
 import mineguard.init.ModConfig;
@@ -16,8 +20,10 @@ public class Troop
     private String masterName;
     private Settings settings;
 
+    // For computing serial numbers (id) when spawning bodyguards
     private int maxIndex = -1;
-    private Map<Integer, EntityBodyguard> bodyguards = new HashMap<Integer, EntityBodyguard>();
+
+    private List<EntityBodyguard> bodyguards = new ArrayList<EntityBodyguard>();
     private static Map<String, Troop> troops = new HashMap<String, Troop>();
 
     public Troop(String masterName)
@@ -60,9 +66,27 @@ public class Troop
 
     public void addBodyguard(EntityBodyguard bg)
     {
-        bodyguards.put(bg.getIndex(), bg);
-        if (bg.getIndex() > maxIndex)
-            maxIndex = bg.getIndex();
+        bodyguards.add(bg);
+        Collections.sort(bodyguards, new Comparator<EntityBodyguard>()
+        {
+            @Override
+            public int compare(EntityBodyguard bg1, EntityBodyguard bg2)
+            {
+                return bg1.getId() < bg2.getId() ? -1 : bg1.getId() == bg2.getId() ? 0 : 1;
+            }
+        });
+
+        if (bg.getId() > maxIndex)
+            maxIndex = bg.getId();
+    }
+
+    public int getBodyguardPos(EntityBodyguard bodyguard)
+    {
+        for (int i = 0; i < bodyguards.size(); i++) {
+            if (bodyguards.get(i) == bodyguard)
+                return i;
+        }
+        return -1;
     }
 
     public void summonBodyguards(World world, BlockPos pos, int count)
@@ -75,7 +99,7 @@ public class Troop
     public void removeBodyguards()
     {
         // TODO: rm troop completely?
-        for (EntityBodyguard bodyguard : bodyguards.values())
+        for (EntityBodyguard bodyguard : bodyguards)
             bodyguard.setDead();
         this.resetBodyguards();
     }
@@ -89,15 +113,15 @@ public class Troop
     public void reform()
     {
         if (master != null) {
-            for (EntityBodyguard bodyguard : bodyguards.values())
-                this.reformBodyguard(bodyguard.getIndex());
+            for (int i = 0; i < bodyguards.size(); i++)
+                this.reformBodyguard(i);
         }
     }
 
     // Handle bodyguard movements inside a formation
-    public boolean reformBodyguard(int bgIndex)
+    public boolean reformBodyguard(int index)
     {
-        EntityBodyguard bodyguard = bodyguards.get(bgIndex);
+        EntityBodyguard bodyguard = bodyguards.get(index);
         if (master == null || bodyguard == null)
             return false;
 
@@ -108,7 +132,7 @@ public class Troop
         if (settings.getFormation() == Formation.SQUARE) {
             // Size is half of side
             perimeter = 8 * size;
-            linearPos = perimeter * bgIndex / bodyguards.size();
+            linearPos = perimeter * index / bodyguards.size();
 
             // Compatible with the circle formation
             if (linearPos < size) {
@@ -129,7 +153,7 @@ public class Troop
             }
         } else if (settings.getFormation() == Formation.CIRCLE) {
             // Size is radius
-            linearPos = 2.0 * Math.PI * bgIndex / bodyguards.size();
+            linearPos = 2.0 * Math.PI * index / bodyguards.size();
 
             posX = master.posX + size * Math.cos(linearPos);
             posZ = master.posZ - size * Math.sin(linearPos);
@@ -140,13 +164,13 @@ public class Troop
 
     public void updateNames()
     {
-        for (EntityBodyguard bodyguard : bodyguards.values())
+        for (EntityBodyguard bodyguard : bodyguards)
             bodyguard.updateName();
     }
 
     public void updateHelmets()
     {
-        for (EntityBodyguard bodyguard : bodyguards.values())
+        for (EntityBodyguard bodyguard : bodyguards)
             bodyguard.putOnColorizedHelmet();
     }
 
@@ -156,12 +180,10 @@ public class Troop
             Troop receivingTroop = Troop.getTroop(name);
 
             // Update bodyguards
-            for (EntityBodyguard bodyguard : bodyguards.values()) {
-                // XXX: no need to change bg's master, this is done by writeToNBT()
-                bodyguard.setIndex(receivingTroop.maxIndex + 1);
+            for (EntityBodyguard bodyguard : bodyguards) {
                 bodyguard.setTroop(receivingTroop);
-                bodyguard.updateName();
                 bodyguard.putOnColorizedHelmet();
+                // No need to change bg's master, this is done by writeToNBT()
 
                 receivingTroop.addBodyguard(bodyguard);
             }
