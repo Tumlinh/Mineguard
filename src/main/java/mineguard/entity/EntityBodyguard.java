@@ -93,6 +93,7 @@ public class EntityBodyguard extends EntityWitherSkeleton
     public void putOnColorizedHelmet()
     {
         ItemStack helmet = new ItemStack(Items.LEATHER_HELMET);
+        helmet.getItem().setMaxDamage(0);
         Items.LEATHER_HELMET.setColor(helmet, troop.getSettings().getColor());
         this.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
     }
