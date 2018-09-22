@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -119,6 +120,15 @@ public class Troop
         int maxIndexOld = maxIndex;
         for (int i = maxIndexOld + 1; i <= maxIndexOld + count; i++)
             EntityUtil.summonBodyguard(this, i, world, pos);
+    }
+
+    public void removeBodyguard(EntityBodyguard bodyguard)
+    {
+        Iterator<EntityBodyguard> bgIterator = bodyguards.iterator();
+        while (bgIterator.hasNext()) {
+            if (bgIterator.next().equals(bodyguard))
+                bgIterator.remove();
+        }
     }
 
     public void removeBodyguards()

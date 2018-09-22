@@ -19,6 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntityBodyguard extends EntityWitherSkeleton
@@ -150,6 +151,16 @@ public class EntityBodyguard extends EntityWitherSkeleton
             hasTouchedGround = true;
             this.reform();
         }
+    }
+
+    @Override
+    public void onDeath(DamageSource cause)
+    {
+        super.onDeath(cause);
+
+        // Update troop
+        if (!world.isRemote)
+            troop.removeBodyguard(this);
     }
 
     @Override
