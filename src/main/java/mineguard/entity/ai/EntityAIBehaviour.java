@@ -17,10 +17,15 @@ public class EntityAIBehaviour extends EntityAIBase
     private EntityBodyguard bg;
     private Troop troop;
 
-    private static double boxSize = 20.0;
+    private static enum State
+    {
+        IDLE,
+        FIGHTING
+    }
 
-    // State
-    private boolean threatTerminated = false;
+    private State state = State.IDLE;
+
+    private static double boxSize = 20.0;
 
     public EntityAIBehaviour(EntityBodyguard bg)
     {
@@ -69,10 +74,10 @@ public class EntityAIBehaviour extends EntityAIBase
             nearbyEntities.sort(new AIUtil.DistanceSorter(troop.getMaster(), bg));
             if (!nearbyEntities.isEmpty()) {
                 bg.setAttackTarget((EntityLivingBase) nearbyEntities.get(0));
-                threatTerminated = false;
-            } else if (!threatTerminated) {
+                state = State.FIGHTING;
+            } else if (state == State.FIGHTING) {
                 bg.reform();
-                threatTerminated = true;
+                state = State.IDLE;
             }
         }
 
