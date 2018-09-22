@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import mineguard.entity.EntityBodyguard;
 import mineguard.init.ModConfig;
@@ -23,7 +24,26 @@ public class Troop
     // For computing serial numbers (id) when spawning bodyguards
     private int maxIndex = -1;
 
-    private List<EntityBodyguard> bodyguards = new ArrayList<EntityBodyguard>();
+    private List<EntityBodyguard> bodyguards = new ArrayList<EntityBodyguard>()
+    {
+        private static final long serialVersionUID = 1L;
+
+        public boolean add(EntityBodyguard newBodyguard)
+        {
+            // Check UUID to avoid duplicates of the same entity (it happens when
+            // loading/unloading worlds)
+            ListIterator<EntityBodyguard> bgIterator = this.listIterator();
+            while (bgIterator.hasNext()) {
+                if (bgIterator.next().getUniqueID().equals(newBodyguard.getUniqueID())) {
+                    bgIterator.set(newBodyguard);
+                    return true;
+                }
+            }
+            bgIterator.add(newBodyguard);
+            return true;
+        }
+    };
+
     private static Map<String, Troop> troops = new HashMap<String, Troop>();
 
     public Troop(String masterName)
@@ -31,16 +51,6 @@ public class Troop
         master = EntityUtil.getPlayerFromName(masterName);
         this.masterName = masterName;
         settings = new Settings(this);
-    }
-
-    public static Troop getTroop(String playerName)
-    {
-        Troop troop = troops.get(playerName);
-        if (troop == null) {
-            troop = new Troop(playerName);
-            troops.put(playerName, troop);
-        }
-        return troop;
     }
 
     public EntityPlayer getMaster()
@@ -64,6 +74,21 @@ public class Troop
         return settings;
     }
 
+    public static Troop getTroop(String playerName)
+    {
+        Troop troop = troops.get(playerName);
+        if (troop == null) {
+            troop = new Troop(playerName);
+            troops.put(playerName, troop);
+        }
+        return troop;
+    }
+
+    public static Map<String, Troop> getTroops()
+    {
+        return troops;
+    }
+
     public void addBodyguard(EntityBodyguard bg)
     {
         bodyguards.add(bg);
@@ -80,13 +105,13 @@ public class Troop
             maxIndex = bg.getId();
     }
 
-    public int getBodyguardPos(EntityBodyguard bodyguard)
+    public int getBodyguardPos(EntityBodyguard bodyguard) throws PositionNotFoundException
     {
         for (int i = 0; i < bodyguards.size(); i++) {
             if (bodyguards.get(i) == bodyguard)
                 return i;
         }
-        return -1;
+        throw new PositionNotFoundException();
     }
 
     public void summonBodyguards(World world, BlockPos pos, int count)
@@ -101,10 +126,10 @@ public class Troop
         // TODO: rm troop completely?
         for (EntityBodyguard bodyguard : bodyguards)
             bodyguard.setDead();
-        this.resetBodyguards();
+        this.resetBodyguardList();
     }
 
-    private void resetBodyguards()
+    public void resetBodyguardList()
     {
         bodyguards.clear();
         maxIndex = -1;
@@ -188,14 +213,16 @@ public class Troop
                 receivingTroop.addBodyguard(bodyguard);
             }
 
-            this.resetBodyguards();
+            this.resetBodyguardList();
         }
     }
 
     @Override
     public String toString()
     {
-        String ret = "master=" + masterName + " " + settings + "\nbg_count=" + bodyguards.size();
+        String ret = "master=" + masterName + " " + settings + " bg_count=" + bodyguards.size();
+        for (EntityBodyguard bodyguard : bodyguards)
+            ret += "\n" + bodyguard;
         return ret;
     }
 }

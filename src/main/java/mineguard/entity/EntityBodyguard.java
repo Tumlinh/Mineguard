@@ -1,12 +1,13 @@
 package mineguard.entity;
 
 import java.util.IllegalFormatException;
-
+import mineguard.PositionNotFoundException;
 import mineguard.Troop;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIFollowMaster;
 import mineguard.init.ModConfig;
 import mineguard.util.EntityUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAISwimming;
@@ -87,7 +88,11 @@ public class EntityBodyguard extends EntityWitherSkeleton
     public void reform()
     {
         if (troop != null)
-            troop.reformBodyguard(troop.getBodyguardPos(this));
+            try {
+                troop.reformBodyguard(troop.getBodyguardPos(this));
+            } catch (PositionNotFoundException e) {
+                e.printStackTrace();
+            }
     }
 
     public void updateName()
@@ -148,6 +153,14 @@ public class EntityBodyguard extends EntityWitherSkeleton
     }
 
     @Override
+    public Entity changeDimension(int dimensionIn)
+    {
+        // Allowing a single bodyguard to change dimension through portals is
+        // undesirable
+        return null;
+    }
+
+    @Override
     public boolean isImmuneToExplosions()
     {
         return true;
@@ -193,6 +206,7 @@ public class EntityBodyguard extends EntityWitherSkeleton
     public String toString()
     {
         return super.toString() + " " + this.tasks.taskEntries.size() + " " + this.targetTasks.taskEntries.size() + " "
-                + (troop == null ? "no_troop" : troop.getMasterName());
+                + (troop == null ? "no_troop" : troop.getMasterName()) + " alive=" + this.isEntityAlive() + " uuid="
+                + this.getUniqueID();
     }
 }

@@ -1,7 +1,7 @@
 package mineguard.handler;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import mineguard.Troop;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
