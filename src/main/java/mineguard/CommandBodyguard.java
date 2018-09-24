@@ -76,35 +76,67 @@ public class CommandBodyguard extends CommandBase
                 }
             }
 
-            // Change settings
-            else if (args.length > 2 && args[0].equals("set")) {
-                String setting = args[1], value = args[2];
-                // TODO: try to read value as integer, then fall back to string
-                // TODO: better way to handle string (multiple quoted words) and booleans
-                switch (setting) {
-                case "behaviour":
-                    troop.getSettings().setBehaviour(Behaviour.get(value));
-                    break;
-                case "color":
-                    troop.getSettings().setColor(Color.decode(value).getRGB());
-                    break;
-                case "displayName":
-                    troop.getSettings().setDisplayName(!value.equals("0"));
-                    break;
-                case "follow":
-                    troop.getSettings().setFollow(!value.equals("0"));
-                    break;
-                case "formation":
-                    troop.getSettings().setFormation(Formation.get(value));
-                    break;
-                case "nameFormat":
-                    troop.getSettings().setNameFormat(value);
-                    break;
-                case "size":
-                    troop.getSettings().setSize(Double.parseDouble(value));
-                    break;
-                default:
-                    break;
+            // Display or change settings
+            else if (args.length > 1 && args[0].equals("set")) {
+                String setting = args[1];
+
+                if (args.length == 2) {
+                    String msg = "";
+                    switch (setting) {
+                    case "behaviour":
+                        msg = troop.getSettings().getBehaviour().getText();
+                        break;
+                    case "color":
+                        msg = "#" + Integer.toHexString(troop.getSettings().getColor() & 0xFFFFFF);
+                        break;
+                    case "displayName":
+                        msg = Boolean.toString(troop.getSettings().isDisplayName());
+                        break;
+                    case "follow":
+                        msg = Boolean.toString(troop.getSettings().isFollowing());
+                        break;
+                    case "formation":
+                        msg = troop.getSettings().getFormation().getText();
+                        break;
+                    case "nameFormat":
+                        msg = troop.getSettings().getNameFormat().replace("%", "%%");
+                        break;
+                    case "size":
+                        msg = Double.toString(troop.getSettings().getSize());
+                        break;
+                    default:
+                        return;
+                    }
+                    msg = setting + " = " + msg;
+                    sendMessage(sender, msg, TextFormatting.WHITE);
+                } else if (args.length == 3) {
+                    String value = args[2];
+                    // TODO: better way to handle string (multiple quoted words) and booleans
+                    switch (setting) {
+                    case "behaviour":
+                        troop.getSettings().setBehaviour(Behaviour.get(value));
+                        break;
+                    case "color":
+                        troop.getSettings().setColor(Color.decode(value).getRGB());
+                        break;
+                    case "displayName":
+                        troop.getSettings().setDisplayName(!value.equals("0"));
+                        break;
+                    case "follow":
+                        troop.getSettings().setFollow(!value.equals("0"));
+                        break;
+                    case "formation":
+                        troop.getSettings().setFormation(Formation.get(value));
+                        break;
+                    case "nameFormat":
+                        troop.getSettings().setNameFormat(value);
+                        break;
+                    case "size":
+                        troop.getSettings().setSize(Double.parseDouble(value));
+                        break;
+                    default:
+                        break;
+                    }
                 }
             }
 
