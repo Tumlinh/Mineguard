@@ -121,8 +121,13 @@ public class Troop
         throw new PositionNotFoundException();
     }
 
-    public void summonBodyguards(World world, BlockPos pos, int count) throws TroopInOtherDimensionException
+    public void summonBodyguards(World world, BlockPos pos, int count)
+            throws TroopInOtherDimensionException, BodyguardOverflowException
     {
+        if (bodyguards.size() + count > ModConfig.MAX_BODYGUARDS)
+            throw new BodyguardOverflowException();
+
+        // Check dimension
         if (bodyguards.isEmpty())
             settings.setDimension(world.provider.getDimension());
         else if (world.provider.getDimension() != settings.getDimension())
@@ -245,6 +250,12 @@ public class Troop
     {
         String ret = "master=" + masterName + " bg_count=" + bodyguards.size() + "\n" + settings;
         return ret;
+    }
+
+    public class BodyguardOverflowException extends Exception
+    {
+        private static final long serialVersionUID = 1L;
+
     }
 
     public class PositionNotFoundException extends Exception

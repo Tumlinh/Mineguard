@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import mineguard.Troop.BodyguardOverflowException;
 import mineguard.Troop.TroopInOtherDimensionException;
 import mineguard.settings.Behaviour;
 import mineguard.settings.Formation;
@@ -55,6 +57,9 @@ public class CommandBodyguard extends CommandBase
                     troop.summonBodyguards(world, player.getPosition(), bgCount);
                 } catch (TroopInOtherDimensionException e) {
                     sendMessage(sender, String.format("Failed summoning bodyguards: Troop is in another dimension"),
+                            TextFormatting.RED);
+                } catch (BodyguardOverflowException e) {
+                    sendMessage(sender, String.format("Failed summoning bodyguards: Limit reached"),
                             TextFormatting.RED);
                 }
             }
