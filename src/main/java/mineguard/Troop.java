@@ -14,7 +14,7 @@ import mineguard.settings.*;
 import mineguard.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class Troop
@@ -169,11 +169,11 @@ public class Troop
         if (bodyguard == null)
             return false;
 
-        Vec3i center = settings.getCenter();
+        Vec3d center = settings.getCenter();
         if (center == null)
             return false;
 
-        double posX = 0, posY = center.getY(), posZ = 0;
+        double posX = 0, posY = center.y, posZ = 0;
         double perimeter, linearPos;
         double size = settings.getSize();
 
@@ -184,27 +184,27 @@ public class Troop
 
             // Compatible with the circle formation
             if (linearPos < size) {
-                posX = center.getX() + size;
-                posZ = center.getZ() - linearPos;
+                posX = center.x + size;
+                posZ = center.z - linearPos;
             } else if (linearPos >= size && linearPos < 3 * size) {
-                posX = center.getX() - linearPos + 2 * size;
-                posZ = center.getZ() - size;
+                posX = center.x - linearPos + 2 * size;
+                posZ = center.z - size;
             } else if (linearPos >= 3 * size && linearPos < 5 * size) {
-                posX = center.getX() - size;
-                posZ = center.getZ() + linearPos - 4 * size;
+                posX = center.x - size;
+                posZ = center.z + linearPos - 4 * size;
             } else if (linearPos >= 5 * size && linearPos < 7 * size) {
-                posX = center.getX() + linearPos - 6 * size;
-                posZ = center.getZ() + size;
+                posX = center.x + linearPos - 6 * size;
+                posZ = center.z + size;
             } else if (linearPos >= 7 * size && linearPos < perimeter) {
-                posX = center.getX() + size;
-                posZ = center.getZ() - linearPos + 8 * size;
+                posX = center.x + size;
+                posZ = center.z - linearPos + 8 * size;
             }
         } else if (settings.getFormation() == Formation.CIRCLE) {
             // Size is radius
             linearPos = 2.0 * Math.PI * index / bodyguards.size();
 
-            posX = center.getX() + size * Math.cos(linearPos);
-            posZ = center.getZ() - size * Math.sin(linearPos);
+            posX = center.x + size * Math.cos(linearPos);
+            posZ = center.z - size * Math.sin(linearPos);
         }
 
         return bodyguard.getNavigator().tryMoveToXYZ(posX, posY, posZ, ModConfig.BODYGUARD_SPEED_TARGET);

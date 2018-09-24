@@ -3,7 +3,7 @@ package mineguard.handler;
 import mineguard.Troop;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -30,7 +30,7 @@ public class EntityEvents
 
             if (troop.getSettings().isFollowing() && master.dimension == troop.getSettings().getDimension())
                 // Update troop center
-                troop.getSettings().setCenter(new Vec3i(master.posX, master.posY, master.posZ));
+                troop.getSettings().setCenter(new Vec3d(master.posX, master.posY, master.posZ));
         }
     }
 

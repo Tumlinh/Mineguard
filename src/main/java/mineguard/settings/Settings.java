@@ -7,7 +7,7 @@ import mineguard.init.ModConfig;
 import mineguard.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vec3d;
 
 public class Settings
 {
@@ -22,7 +22,7 @@ public class Settings
     private String nameFormat = "Agent%d";
     private double size = 10.0;
 
-    private Vec3i center;
+    private Vec3d center;
     private int dimension;
 
     public Settings(Troop troop)
@@ -33,7 +33,7 @@ public class Settings
         EntityPlayer master = troop.getMaster();
         if (master != null) {
             if (center == null) {
-                center = new Vec3i(master.posX, master.posY, master.posZ);
+                center = new Vec3d(master.posX, master.posY, master.posZ);
                 this.writeToNBT();
             }
         }
@@ -52,12 +52,12 @@ public class Settings
         }
     }
 
-    public Vec3i getCenter()
+    public Vec3d getCenter()
     {
         return center;
     }
 
-    public void setCenter(Vec3i center)
+    public void setCenter(Vec3d center)
     {
         this.center = center;
     }
@@ -165,9 +165,9 @@ public class Settings
         playerSettings.setString("NameFormat", nameFormat);
         playerSettings.setDouble("Size", size);
 
-        playerSettings.setDouble("CenterX", center.getX());
-        playerSettings.setDouble("CenterY", center.getY());
-        playerSettings.setDouble("CenterZ", center.getZ());
+        playerSettings.setDouble("CenterX", center.x);
+        playerSettings.setDouble("CenterY", center.y);
+        playerSettings.setDouble("CenterZ", center.z);
         playerSettings.setInteger("Dimension", dimension);
 
         // Read full settings from NBT
@@ -220,7 +220,7 @@ public class Settings
             size = compound.getDouble("Size");
 
         if (compound.hasKey("CenterX") && compound.hasKey("CenterY") && compound.hasKey("CenterZ"))
-            center = new Vec3i(compound.getDouble("CenterX"), compound.getDouble("CenterY"),
+            center = new Vec3d(compound.getDouble("CenterX"), compound.getDouble("CenterY"),
                     compound.getDouble("CenterZ"));
         if (compound.hasKey("Dimension"))
             dimension = compound.getInteger("Dimension");
