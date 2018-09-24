@@ -28,8 +28,8 @@ public class EntityEvents
             EntityPlayer master = (EntityPlayer) event.getEntity();
             Troop troop = Troop.getTroop(master.getName());
 
-            if (troop.getSettings().isFollowing())
-                // Update center position
+            if (troop.getSettings().isFollowing() && master.dimension == troop.getSettings().getDimension())
+                // Update troop center
                 troop.getSettings().setCenter(new Vec3i(master.posX, master.posY, master.posZ));
         }
     }

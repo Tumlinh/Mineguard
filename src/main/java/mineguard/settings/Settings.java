@@ -7,7 +7,6 @@ import mineguard.init.ModConfig;
 import mineguard.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 
 public class Settings
@@ -24,16 +23,19 @@ public class Settings
     private double size = 10.0;
 
     private Vec3i center;
+    private int dimension;
 
     public Settings(Troop troop)
     {
         this.troop = troop;
         this.readFromNBT();
-        EntityPlayer master = troop.getMaster();
 
-        if (center == null && master != null) {
-            center = new Vec3i(master.posX, master.posY, master.posZ);
-            this.writeToNBT();
+        EntityPlayer master = troop.getMaster();
+        if (master != null) {
+            if (center == null) {
+                center = new Vec3i(master.posX, master.posY, master.posZ);
+                this.writeToNBT();
+            }
         }
     }
 
@@ -72,6 +74,16 @@ public class Settings
             this.writeToNBT();
             troop.updateHelmets();
         }
+    }
+
+    public int getDimension()
+    {
+        return dimension;
+    }
+
+    public void setDimension(int dimension)
+    {
+        this.dimension = dimension;
     }
 
     public boolean isDisplayName()
@@ -156,6 +168,7 @@ public class Settings
         playerSettings.setDouble("CenterX", center.getX());
         playerSettings.setDouble("CenterY", center.getY());
         playerSettings.setDouble("CenterZ", center.getZ());
+        playerSettings.setInteger("Dimension", dimension);
 
         // Read full settings from NBT
         NBTTagCompound mainCompound = new NBTTagCompound();
@@ -206,10 +219,11 @@ public class Settings
         if (compound.hasKey("Size"))
             size = compound.getDouble("Size");
 
-        // Get center position
         if (compound.hasKey("CenterX") && compound.hasKey("CenterY") && compound.hasKey("CenterZ"))
-            center = new BlockPos(compound.getDouble("CenterX"), compound.getDouble("CenterY"),
+            center = new Vec3i(compound.getDouble("CenterX"), compound.getDouble("CenterY"),
                     compound.getDouble("CenterZ"));
+        if (compound.hasKey("Dimension"))
+            dimension = compound.getInteger("Dimension");
     }
 
     @Override
@@ -217,6 +231,6 @@ public class Settings
     {
         return "follow=" + follow + " color=" + color + " displayName=" + displayName + " formation="
                 + formation.getText() + " nameFormat='" + nameFormat + "' size=" + size + " behaviour="
-                + behaviour.getText();
+                + behaviour.getText() + " center=" + center + " dimension=" + dimension;
     }
 }

@@ -67,8 +67,8 @@ public class Troop
 
     public void setMaster(String name)
     {
-        this.masterName = name;
-        this.master = EntityUtil.getPlayerFromName(name);
+        masterName = name;
+        master = EntityUtil.getPlayerFromName(name);
     }
 
     public Settings getSettings()
@@ -107,6 +107,11 @@ public class Troop
             maxIndex = bg.getId();
     }
 
+    public int getBodyguardCount()
+    {
+        return bodyguards.size();
+    }
+
     public int getBodyguardPos(EntityBodyguard bodyguard) throws PositionNotFoundException
     {
         for (int i = 0; i < bodyguards.size(); i++) {
@@ -116,8 +121,13 @@ public class Troop
         throw new PositionNotFoundException();
     }
 
-    public void summonBodyguards(World world, BlockPos pos, int count)
+    public void summonBodyguards(World world, BlockPos pos, int count) throws TroopInOtherDimensionException
     {
+        if (bodyguards.isEmpty())
+            settings.setDimension(world.provider.getDimension());
+        else if (world.provider.getDimension() != settings.getDimension())
+            throw new TroopInOtherDimensionException();
+
         int maxIndexOld = maxIndex;
         for (int i = maxIndexOld + 1; i <= maxIndexOld + count; i++)
             EntityUtil.summonBodyguard(this, i, world, pos);
@@ -160,6 +170,9 @@ public class Troop
             return false;
 
         Vec3i center = settings.getCenter();
+        if (center == null)
+            return false;
+
         double posX = 0, posY = center.getY(), posZ = 0;
         double perimeter, linearPos;
         double size = settings.getSize();
@@ -211,7 +224,7 @@ public class Troop
 
     public void give(String name)
     {
-        if (masterName != name) {
+        if (!masterName.equals(name)) {
             Troop receivingTroop = Troop.getTroop(name);
 
             // Update bodyguards
@@ -230,9 +243,18 @@ public class Troop
     @Override
     public String toString()
     {
-        String ret = "master=" + masterName + " " + settings + " bg_count=" + bodyguards.size();
-        for (EntityBodyguard bodyguard : bodyguards)
-            ret += "\n" + bodyguard;
+        String ret = "master=" + masterName + " bg_count=" + bodyguards.size() + "\n" + settings;
         return ret;
+    }
+
+    public class PositionNotFoundException extends Exception
+    {
+        private static final long serialVersionUID = 1L;
+
+    }
+
+    public class TroopInOtherDimensionException extends Exception
+    {
+        private static final long serialVersionUID = 1L;
     }
 }

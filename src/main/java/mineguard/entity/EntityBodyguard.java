@@ -1,8 +1,8 @@
 package mineguard.entity;
 
 import java.util.IllegalFormatException;
-import mineguard.PositionNotFoundException;
 import mineguard.Troop;
+import mineguard.Troop.PositionNotFoundException;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;

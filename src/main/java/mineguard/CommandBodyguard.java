@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import mineguard.Troop.TroopInOtherDimensionException;
 import mineguard.settings.Behaviour;
 import mineguard.settings.Formation;
 import net.minecraft.command.CommandBase;
@@ -13,6 +14,9 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
@@ -47,7 +51,12 @@ public class CommandBodyguard extends CommandBase
             if (args.length == 2 && args[0].equals("mk")) {
                 int bgCount = Integer.parseInt(args[1]);
                 World world = player.world;
-                troop.summonBodyguards(world, player.getPosition(), bgCount);
+                try {
+                    troop.summonBodyguards(world, player.getPosition(), bgCount);
+                } catch (TroopInOtherDimensionException e) {
+                    sendMessage(sender, String.format("Failed summoning bodyguards: Troop is in another dimension"),
+                            TextFormatting.RED);
+                }
             }
 
             // Remove bodyguards
@@ -139,5 +148,12 @@ public class CommandBodyguard extends CommandBase
                         Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getOnlinePlayerNames()));
         }
         return new ArrayList<String>();
+    }
+
+    private static void sendMessage(ICommandSender sender, String message, TextFormatting textFormatting)
+    {
+        ITextComponent msg = new TextComponentTranslation(message, new Object[0]);
+        msg.getStyle().setColor(textFormatting);
+        sender.sendMessage(msg);
     }
 }
