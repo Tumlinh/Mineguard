@@ -10,7 +10,7 @@ Compatible with **Minecraft 1.12.2**
 ### Usage
 ```
 /bg mk <number>
-/bg set <behaviour|follow|formation|size> <value>
+/bg set <behaviour|follow|formation|size> [value]
 /bg <info|rm|rs>
 ```
 

@@ -39,7 +39,7 @@ public class CommandBodyguard extends CommandBase
     @Override
     public String getUsage(ICommandSender sender)
     {
-        return "/bg <info|give|mk|rm|rs|set>";
+        return "\n/bg mk <number>\n" + "/bg set <behaviour|follow|formation|size> [value]\n" + "/bg <info|rm|rs>";
     }
 
     @Override
@@ -140,7 +140,8 @@ public class CommandBodyguard extends CommandBase
                 }
             }
 
-            // TODO: Reset bg's behaviour, whitelist, blacklist, formation, etc.
+            // Reset bg's behaviour, whitelist, blacklist, formation, etc.
+            // TODO: implement or remove it
             else if (args.length == 1 && args[0].equals("rs")) {
 
             }
