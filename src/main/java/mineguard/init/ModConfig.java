@@ -27,20 +27,22 @@ public class ModConfig
 
     private void load()
     {
-        SETTINGS_FILE = config.getString("SettingsFile", "", SETTINGS_FILE, "");
-        MAX_BODYGUARDS = config.getInt("maxBodyguards", "", MAX_BODYGUARDS, 0, Integer.MAX_VALUE, "");
-        BODYGUARD_ATTACK_DAMAGE = config.getFloat("BodyguardAttackDamage", "", BODYGUARD_ATTACK_DAMAGE, 0,
+        SETTINGS_FILE = config.getString("SettingsFile", Configuration.CATEGORY_GENERAL, SETTINGS_FILE, "");
+        MAX_BODYGUARDS = config.getInt("maxBodyguards", Configuration.CATEGORY_GENERAL, MAX_BODYGUARDS, 0,
+                Integer.MAX_VALUE, "");
+        BODYGUARD_ATTACK_DAMAGE = config.getFloat("BodyguardAttackDamage", "bodyguard", BODYGUARD_ATTACK_DAMAGE, 0,
                 Float.MAX_VALUE, "");
-        BODYGUARD_ATTACK_SPEED = config.getFloat("BodyguardAttackSpeed", "", BODYGUARD_ATTACK_SPEED, 0, Float.MAX_VALUE,
-                "");
-        BODYGUARD_KNOCKBACK_RESISTANCE = config.getFloat("BodyguardKnockBackResistance", "",
+        BODYGUARD_ATTACK_SPEED = config.getFloat("BodyguardAttackSpeed", "bodyguard", BODYGUARD_ATTACK_SPEED, 0,
+                Float.MAX_VALUE, "");
+        BODYGUARD_KNOCKBACK_RESISTANCE = config.getFloat("BodyguardKnockBackResistance", "bodyguard",
                 BODYGUARD_KNOCKBACK_RESISTANCE, 0, Float.MAX_VALUE, "");
-        BODYGUARD_MAX_HEALTH = config.getFloat("BodyguardMaxHealth", "", BODYGUARD_MAX_HEALTH, 0, Float.MAX_VALUE, "");
-        BODYGUARD_MOVEMENT_SPEED = config.getFloat("BodyguardMovementSpeed", "", BODYGUARD_MOVEMENT_SPEED, 0,
+        BODYGUARD_MAX_HEALTH = config.getFloat("BodyguardMaxHealth", "bodyguard", BODYGUARD_MAX_HEALTH, 0,
                 Float.MAX_VALUE, "");
-        BODYGUARD_SPEED_TARGET = config.getFloat("BodyguardSpeedTarget", "", BODYGUARD_SPEED_TARGET, 0, Float.MAX_VALUE,
-                "");
-        BODYGUARD_FOLLOW_RANGE = config.getFloat("BodyguardFollowRange", "", BODYGUARD_FOLLOW_RANGE, 0, Float.MAX_VALUE,
-                "");
+        BODYGUARD_MOVEMENT_SPEED = config.getFloat("BodyguardMovementSpeed", "bodyguard", BODYGUARD_MOVEMENT_SPEED, 0,
+                Float.MAX_VALUE, "");
+        BODYGUARD_SPEED_TARGET = config.getFloat("BodyguardSpeedTarget", "bodyguard", BODYGUARD_SPEED_TARGET, 0,
+                Float.MAX_VALUE, "");
+        BODYGUARD_FOLLOW_RANGE = config.getFloat("BodyguardFollowRange", "bodyguard", BODYGUARD_FOLLOW_RANGE, 0,
+                Float.MAX_VALUE, "");
     }
 }
