@@ -56,11 +56,9 @@ public class CommandBodyguard extends CommandBase
                 try {
                     troop.summonBodyguards(world, player.getPosition(), bgCount);
                 } catch (TroopInOtherDimensionException e) {
-                    sendMessage(sender, String.format("Failed summoning bodyguards: Troop is in another dimension"),
-                            TextFormatting.RED);
+                    sendMessage(sender, e.getMessage(), TextFormatting.RED);
                 } catch (BodyguardOverflowException e) {
-                    sendMessage(sender, String.format("Failed summoning bodyguards: Limit reached"),
-                            TextFormatting.RED);
+                    sendMessage(sender, e.getMessage(), TextFormatting.RED);
                 }
             }
 
@@ -71,7 +69,11 @@ public class CommandBodyguard extends CommandBase
 
             // Give bodyguards
             else if (args.length == 2 && args[0].equals("give")) {
-                troop.give(args[1]);
+                try {
+                    troop.give(args[1]);
+                } catch (BodyguardOverflowException e) {
+                    sendMessage(sender, e.getMessage(), TextFormatting.RED);
+                }
             }
 
             // Change settings

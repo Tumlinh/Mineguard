@@ -227,10 +227,13 @@ public class Troop
             bodyguard.putOnColorizedHelmet();
     }
 
-    public void give(String name)
+    public void give(String name) throws BodyguardOverflowException
     {
         if (!masterName.equals(name)) {
             Troop receivingTroop = Troop.getTroop(name);
+
+            if (receivingTroop.bodyguards.size() + this.bodyguards.size() > ModConfig.MAX_BODYGUARDS)
+                throw new BodyguardOverflowException();
 
             // Update bodyguards
             for (EntityBodyguard bodyguard : bodyguards) {
@@ -256,6 +259,11 @@ public class Troop
     {
         private static final long serialVersionUID = 1L;
 
+        @Override
+        public String getMessage()
+        {
+            return "Failed adding bodyguards: Limit reached";
+        }
     }
 
     public class PositionNotFoundException extends Exception
@@ -267,5 +275,11 @@ public class Troop
     public class TroopInOtherDimensionException extends Exception
     {
         private static final long serialVersionUID = 1L;
+
+        @Override
+        public String getMessage()
+        {
+            return "Failed summoning bodyguards: Troop is in another dimension";
+        }
     }
 }
