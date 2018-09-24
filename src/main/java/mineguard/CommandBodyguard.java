@@ -48,7 +48,6 @@ public class CommandBodyguard extends CommandBase
                 int bgCount = Integer.parseInt(args[1]);
                 World world = player.world;
                 troop.summonBodyguards(world, player.getPosition(), bgCount);
-                troop.reform();
             }
 
             // Remove bodyguards

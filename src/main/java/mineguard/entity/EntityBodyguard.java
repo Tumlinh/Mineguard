@@ -4,7 +4,7 @@ import java.util.IllegalFormatException;
 import mineguard.PositionNotFoundException;
 import mineguard.Troop;
 import mineguard.entity.ai.EntityAIBehaviour;
-import mineguard.entity.ai.EntityAIFollowMaster;
+import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
 import mineguard.util.EntityUtil;
 import net.minecraft.entity.Entity;
@@ -27,10 +27,6 @@ public class EntityBodyguard extends EntityWitherSkeleton
     private int id;
     private Troop troop;
 
-    // State variable for reforming the bodyguard once it touches the ground
-    // (otherwise no path can be found)
-    private boolean hasTouchedGround;
-
     // Called when spawning entities from NBT or hatching egg
     public EntityBodyguard(World worldIn)
     {
@@ -47,7 +43,6 @@ public class EntityBodyguard extends EntityWitherSkeleton
         super(worldIn);
         this.id = id;
         this.troop = troop;
-        hasTouchedGround = this.onGround;
         if (troop != null)
             troop.addBodyguard(this);
 
@@ -125,7 +120,7 @@ public class EntityBodyguard extends EntityWitherSkeleton
         this.tasks.taskEntries.clear();
         this.targetTasks.taskEntries.clear();
         this.tasks.addTask(1, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_SPEED_TARGET, false));
-        this.tasks.addTask(2, new EntityAIFollowMaster(this));
+        this.tasks.addTask(2, new EntityAIReform(this));
         this.tasks.addTask(3, new EntityAISwimming(this));
         this.targetTasks.addTask(1, new EntityAIBehaviour(this));
     }
@@ -141,16 +136,6 @@ public class EntityBodyguard extends EntityWitherSkeleton
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MAX_HEALTH, ModConfig.BODYGUARD_MAX_HEALTH);
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MOVEMENT_SPEED, ModConfig.BODYGUARD_MOVEMENT_SPEED);
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.FOLLOW_RANGE, ModConfig.BODYGUARD_FOLLOW_RANGE);
-    }
-
-    @Override
-    public void onLivingUpdate()
-    {
-        super.onLivingUpdate();
-        if (!hasTouchedGround && this.onGround) {
-            hasTouchedGround = true;
-            this.reform();
-        }
     }
 
     @Override

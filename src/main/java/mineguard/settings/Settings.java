@@ -5,7 +5,10 @@ import java.io.IOException;
 import mineguard.Troop;
 import mineguard.init.ModConfig;
 import mineguard.util.NBTUtil;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 public class Settings
 {
@@ -20,10 +23,18 @@ public class Settings
     private String nameFormat = "Agent%d";
     private double size = 10.0;
 
+    private Vec3i center;
+
     public Settings(Troop troop)
     {
         this.troop = troop;
         this.readFromNBT();
+        EntityPlayer master = troop.getMaster();
+
+        if (center == null && master != null) {
+            center = new Vec3i(master.posX, master.posY, master.posZ);
+            this.writeToNBT();
+        }
     }
 
     public Behaviour getBehaviour()
@@ -37,6 +48,16 @@ public class Settings
             this.behaviour = behaviour;
             this.writeToNBT();
         }
+    }
+
+    public Vec3i getCenter()
+    {
+        return center;
+    }
+
+    public void setCenter(Vec3i center)
+    {
+        this.center = center;
     }
 
     public int getColor()
@@ -78,8 +99,6 @@ public class Settings
             this.follow = follow;
             this.writeToNBT();
         }
-        if (follow)
-            troop.reform();
     }
 
     public Formation getFormation()
@@ -93,7 +112,6 @@ public class Settings
             this.formation = formation;
             this.writeToNBT();
         }
-        troop.reform();
     }
 
     public String getNameFormat()
@@ -121,7 +139,6 @@ public class Settings
             this.size = size;
             this.writeToNBT();
         }
-        troop.reform();
     }
 
     public void writeToNBT()
@@ -135,6 +152,10 @@ public class Settings
         playerSettings.setByte("Formation", (byte) Formation.get(formation.getText()).getId());
         playerSettings.setString("NameFormat", nameFormat);
         playerSettings.setDouble("Size", size);
+
+        playerSettings.setDouble("CenterX", center.getX());
+        playerSettings.setDouble("CenterY", center.getY());
+        playerSettings.setDouble("CenterZ", center.getZ());
 
         // Read full settings from NBT
         NBTTagCompound mainCompound = new NBTTagCompound();
@@ -184,6 +205,11 @@ public class Settings
             nameFormat = compound.getString("NameFormat");
         if (compound.hasKey("Size"))
             size = compound.getDouble("Size");
+
+        // Get center position
+        if (compound.hasKey("CenterX") && compound.hasKey("CenterY") && compound.hasKey("CenterZ"))
+            center = new BlockPos(compound.getDouble("CenterX"), compound.getDouble("CenterY"),
+                    compound.getDouble("CenterZ"));
     }
 
     @Override
