@@ -83,7 +83,10 @@ public class Settings
 
     public void setDimension(int dimension)
     {
-        this.dimension = dimension;
+        if (this.dimension != dimension) {
+            this.dimension = dimension;
+            this.writeToNBT();
+        }
     }
 
     public boolean isDisplayName()
