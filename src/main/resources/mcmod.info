@@ -2,7 +2,7 @@
 {
   "modid": "mineguard",
   "name": "Mineguard",
-  "description": "Hang out with an army of bodyguards protecting you",
+  "description": "Hang out with an army of collectively smart bodyguards",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://github.com/Tumlinh/Mineguard",
