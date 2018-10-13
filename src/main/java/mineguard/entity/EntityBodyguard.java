@@ -2,7 +2,6 @@ package mineguard.entity;
 
 import java.util.IllegalFormatException;
 import mineguard.Troop;
-import mineguard.Troop.PositionNotFoundException;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
@@ -81,16 +80,6 @@ public class EntityBodyguard extends EntityWitherSkeleton
         this.troop = troop;
     }
 
-    public void reform()
-    {
-        if (troop != null)
-            try {
-                troop.reformBodyguard(troop.getBodyguardPos(this));
-            } catch (PositionNotFoundException e) {
-                e.printStackTrace();
-            }
-    }
-
     public void updateName()
     {
         try {
@@ -119,9 +108,9 @@ public class EntityBodyguard extends EntityWitherSkeleton
     {
         this.tasks.taskEntries.clear();
         this.targetTasks.taskEntries.clear();
-        this.tasks.addTask(1, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_SPEED_TARGET, false));
-        this.tasks.addTask(2, new EntityAIReform(this));
-        this.tasks.addTask(3, new EntityAISwimming(this));
+        this.tasks.addTask(1, new EntityAISwimming(this));
+        this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_SPEED_TARGET, false));
+        this.tasks.addTask(3, new EntityAIReform(this, 30));
         this.targetTasks.addTask(1, new EntityAIBehaviour(this));
     }
 
@@ -171,6 +160,12 @@ public class EntityBodyguard extends EntityWitherSkeleton
     @Override
     public void playLivingSound()
     {
+    }
+
+    @Override
+    protected float getWaterSlowDown()
+    {
+        return 0.85F;
     }
 
     @Override

@@ -17,14 +17,6 @@ public class EntityAIBehaviour extends EntityAIBase
     private EntityBodyguard bg;
     private Troop troop;
 
-    private static enum State
-    {
-        IDLE,
-        FIGHTING
-    }
-
-    private State state = State.IDLE;
-
     private static double boxSize = 20.0;
 
     public EntityAIBehaviour(EntityBodyguard bg)
@@ -63,6 +55,7 @@ public class EntityAIBehaviour extends EntityAIBase
                         public boolean apply(@Nullable Entity entity)
                         {
                             return AIUtil.isHostile(troop, entity);
+
                             /*
                              * return (entity instanceof EntityLivingBase) && entity != troop.getMaster() &&
                              * !(entity instanceof EntityPlayer && ((EntityPlayer) entity).isSpectator());
@@ -72,13 +65,8 @@ public class EntityAIBehaviour extends EntityAIBase
 
             // Pick the most dangerous entity (cf. heuristics)
             nearbyEntities.sort(new AIUtil.DistanceSorter(troop.getMaster(), bg));
-            if (!nearbyEntities.isEmpty()) {
+            if (!nearbyEntities.isEmpty())
                 bg.setAttackTarget((EntityLivingBase) nearbyEntities.get(0));
-                state = State.FIGHTING;
-            } else if (state == State.FIGHTING) {
-                bg.reform();
-                state = State.IDLE;
-            }
         }
 
         // TODO: Aggressive

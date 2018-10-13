@@ -112,13 +112,13 @@ public class Troop
         return bodyguards.size();
     }
 
-    public int getBodyguardPos(EntityBodyguard bodyguard) throws PositionNotFoundException
+    public int getBodyguardIndex(EntityBodyguard bodyguard) throws BodyguardNotFoundException
     {
         for (int i = 0; i < bodyguards.size(); i++) {
             if (bodyguards.get(i) == bodyguard)
                 return i;
         }
-        throw new PositionNotFoundException();
+        throw new BodyguardNotFoundException();
     }
 
     public void summonBodyguards(World world, BlockPos pos, int count)
@@ -161,28 +161,17 @@ public class Troop
         maxIndex = -1;
     }
 
-    public void reform()
+    public Vec3d getPosInFormation(Formation formation, int index)
     {
-        for (int i = 0; i < bodyguards.size(); i++)
-            this.reformBodyguard(i);
-    }
-
-    // Handle bodyguard movements inside a formation
-    public boolean reformBodyguard(int index)
-    {
-        EntityBodyguard bodyguard = bodyguards.get(index);
-        if (bodyguard == null)
-            return false;
-
         Vec3d center = settings.getCenter();
         if (center == null)
-            return false;
+            return null;
 
         double posX = 0, posY = center.y, posZ = 0;
         double perimeter, linearPos;
         double size = settings.getSize();
 
-        if (settings.getFormation() == Formation.SQUARE) {
+        if (formation == Formation.SQUARE) {
             // Size is half of side
             perimeter = 8 * size;
             linearPos = perimeter * index / bodyguards.size();
@@ -204,15 +193,14 @@ public class Troop
                 posX = center.x + size;
                 posZ = center.z - linearPos + 8 * size;
             }
-        } else if (settings.getFormation() == Formation.CIRCLE) {
+        } else if (formation == Formation.CIRCLE) {
             // Size is radius
             linearPos = 2.0 * Math.PI * index / bodyguards.size();
 
             posX = center.x + size * Math.cos(linearPos);
             posZ = center.z - size * Math.sin(linearPos);
         }
-
-        return bodyguard.getNavigator().tryMoveToXYZ(posX, posY, posZ, ModConfig.BODYGUARD_SPEED_TARGET);
+        return new Vec3d(posX, posY, posZ);
     }
 
     public void updateNames()
@@ -266,7 +254,7 @@ public class Troop
         }
     }
 
-    public class PositionNotFoundException extends Exception
+    public class BodyguardNotFoundException extends Exception
     {
         private static final long serialVersionUID = 1L;
 
