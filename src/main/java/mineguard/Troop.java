@@ -124,7 +124,7 @@ public class Troop
     public void summonBodyguards(World world, BlockPos pos, int count)
             throws TroopInOtherDimensionException, BodyguardOverflowException
     {
-        if (bodyguards.size() + count > ModConfig.MAX_BODYGUARDS)
+        if (bodyguards.size() + count > ModConfig.MAX_TROOP_SIZE)
             throw new BodyguardOverflowException();
 
         // Check dimension
@@ -220,7 +220,7 @@ public class Troop
         if (!masterName.equals(name)) {
             Troop receivingTroop = Troop.getTroop(name);
 
-            if (receivingTroop.bodyguards.size() + this.bodyguards.size() > ModConfig.MAX_BODYGUARDS)
+            if (receivingTroop.bodyguards.size() + this.bodyguards.size() > ModConfig.MAX_TROOP_SIZE)
                 throw new BodyguardOverflowException();
 
             // Update bodyguards
@@ -240,6 +240,10 @@ public class Troop
     public String toString()
     {
         String ret = "master=" + masterName + " bg_count=" + bodyguards.size() + "\n" + settings;
+        // XXX: debugging
+        ret += "\n";
+        for (EntityBodyguard bg : bodyguards)
+            ret += bg.toString() + "\n";
         return ret;
     }
 

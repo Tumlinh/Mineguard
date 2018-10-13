@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import mineguard.Troop.BodyguardOverflowException;
 import mineguard.Troop.TroopInOtherDimensionException;
 import mineguard.settings.Behaviour;
@@ -87,7 +86,12 @@ public class CommandBodyguard extends CommandBase
                         msg = troop.getSettings().getBehaviour().getText();
                         break;
                     case "color":
-                        msg = "#" + Integer.toHexString(troop.getSettings().getColor() & 0xFFFFFF);
+                        String hexColor = Integer.toHexString(troop.getSettings().getColor() & 0xFFFFFF);
+                        // Pad with zeros
+                        int len = hexColor.length();
+                        for (int i = 0; i < 6 - len; i++)
+                            hexColor = "0" + hexColor;
+                        msg = "#" + hexColor;
                         break;
                     case "displayName":
                         msg = Boolean.toString(troop.getSettings().isDisplayName());

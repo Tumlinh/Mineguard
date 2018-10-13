@@ -8,11 +8,11 @@ public class ModConfig
     private Configuration config;
 
     public static String SETTINGS_FILE = "settings.mg";
-    public static int MAX_BODYGUARDS = 64;
-    public static float BODYGUARD_ATTACK_DAMAGE = 20;
-    public static float BODYGUARD_ATTACK_SPEED = 2.0F;
-    public static float BODYGUARD_KNOCKBACK_RESISTANCE = 5;
-    public static float BODYGUARD_MAX_HEALTH = 100;
+    public static int MAX_TROOP_SIZE = 64;
+    public static float BODYGUARD_ATTACK_DAMAGE = 3.0F;
+    public static float BODYGUARD_ATTACK_SPEED = 4.0F;
+    public static float BODYGUARD_KNOCKBACK_RESISTANCE = 0.0F;
+    public static float BODYGUARD_MAX_HEALTH = 20;
     public static float BODYGUARD_MOVEMENT_SPEED = 0.3F;
     public static float BODYGUARD_SPEED_TARGET = 1.4F;
     public static float BODYGUARD_FOLLOW_RANGE = 32;
@@ -28,7 +28,7 @@ public class ModConfig
     private void load()
     {
         SETTINGS_FILE = config.getString("SettingsFile", Configuration.CATEGORY_GENERAL, SETTINGS_FILE, "");
-        MAX_BODYGUARDS = config.getInt("maxBodyguards", Configuration.CATEGORY_GENERAL, MAX_BODYGUARDS, 0,
+        MAX_TROOP_SIZE = config.getInt("MaxTroopSize", Configuration.CATEGORY_GENERAL, MAX_TROOP_SIZE, 0,
                 Integer.MAX_VALUE, "");
         BODYGUARD_ATTACK_DAMAGE = config.getFloat("BodyguardAttackDamage", "bodyguard", BODYGUARD_ATTACK_DAMAGE, 0,
                 Float.MAX_VALUE, "");

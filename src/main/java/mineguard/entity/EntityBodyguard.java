@@ -6,12 +6,14 @@ import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
 import mineguard.util.EntityUtil;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,9 +21,11 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class EntityBodyguard extends EntityWitherSkeleton
+public class EntityBodyguard extends EntityMob
 {
     private int id;
     private Troop troop;
@@ -34,12 +38,13 @@ public class EntityBodyguard extends EntityWitherSkeleton
         // #1. Disable spawn from eggs
         // #2. Add bodyguard to player's troop (call other constructor)
         super(worldIn);
+        this.setSize(0.6F, 1.8F);
     }
 
     // Called when spawning new bodyguards as part of a troop
     public EntityBodyguard(World worldIn, int id, Troop troop)
     {
-        super(worldIn);
+        this(worldIn);
         this.id = id;
         this.troop = troop;
         if (troop != null)
@@ -146,20 +151,27 @@ public class EntityBodyguard extends EntityWitherSkeleton
     }
 
     @Override
-    public boolean isImmuneToExplosions()
-    {
-        return true;
-    }
-
-    @Override
     public boolean canDropLoot()
     {
         return false;
     }
 
     @Override
-    public void playLivingSound()
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
+        return SoundEvents.ENTITY_HOSTILE_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound()
+    {
+        return SoundEvents.ENTITY_HOSTILE_DEATH;
+    }
+
+    @Override
+    protected void playStepSound(BlockPos pos, Block blockIn)
+    {
+        super.playStepSound(pos, blockIn);
     }
 
     @Override
@@ -198,6 +210,6 @@ public class EntityBodyguard extends EntityWitherSkeleton
     {
         return super.toString() + " " + this.tasks.taskEntries.size() + " " + this.targetTasks.taskEntries.size() + " "
                 + (troop == null ? "no_troop" : troop.getMasterName()) + " alive=" + this.isEntityAlive() + " uuid="
-                + this.getUniqueID();
+                + this.getUniqueID() + " armor_damages=" + " hp=" + this.getHealth();
     }
 }
