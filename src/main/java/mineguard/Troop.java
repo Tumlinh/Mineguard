@@ -12,6 +12,7 @@ import mineguard.entity.EntityBodyguard;
 import mineguard.init.ModConfig;
 import mineguard.settings.*;
 import mineguard.util.EntityUtil;
+import mineguard.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -93,6 +94,14 @@ public class Troop
 
     public void addBodyguard(EntityBodyguard bg)
     {
+        if (bg.getId() == NBTUtil.UNDEFINED)
+            bg.setId(maxIndex++);
+        else if (bg.getId() > maxIndex)
+            maxIndex = bg.getId();
+
+        if (!bg.hasCustomName())
+            bg.updateName();
+
         bodyguards.add(bg);
         Collections.sort(bodyguards, new Comparator<EntityBodyguard>()
         {
@@ -102,9 +111,6 @@ public class Troop
                 return bg1.getId() < bg2.getId() ? -1 : bg1.getId() == bg2.getId() ? 0 : 1;
             }
         });
-
-        if (bg.getId() > maxIndex)
-            maxIndex = bg.getId();
     }
 
     public int getBodyguardCount()
@@ -223,14 +229,9 @@ public class Troop
             if (receivingTroop.bodyguards.size() + this.bodyguards.size() > ModConfig.MAX_TROOP_SIZE)
                 throw new BodyguardOverflowException();
 
-            // Update bodyguards
-            for (EntityBodyguard bodyguard : bodyguards) {
-                bodyguard.setTroop(receivingTroop);
-                bodyguard.putOnColorizedHelmet();
-                // No need to change bg's master, this is done by writeToNBT()
-
-                receivingTroop.addBodyguard(bodyguard);
-            }
+            // Get bodyguards
+            for (EntityBodyguard bodyguard : bodyguards)
+                bodyguard.give(receivingTroop);
 
             this.resetBodyguardList();
         }

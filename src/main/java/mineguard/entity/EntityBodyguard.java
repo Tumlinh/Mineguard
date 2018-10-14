@@ -7,6 +7,7 @@ import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
 import mineguard.util.EntityUtil;
+import mineguard.util.NBTUtil;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -24,13 +25,14 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
 public class EntityBodyguard extends EntityCreature
 {
-    private int id;
+    private int id = NBTUtil.UNDEFINED;
     private Troop troop;
 
     // Called when spawning entities from NBT or hatching egg
@@ -70,6 +72,11 @@ public class EntityBodyguard extends EntityCreature
     public int getId()
     {
         return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public Troop getTroop()
@@ -150,7 +157,7 @@ public class EntityBodyguard extends EntityCreature
         super.onDeath(cause);
 
         // Update troop
-        if (!world.isRemote)
+        if (!world.isRemote && troop != null)
             troop.removeBodyguard(this);
     }
 
@@ -178,9 +185,8 @@ public class EntityBodyguard extends EntityCreature
     public void readEntityFromNBT(NBTTagCompound compound)
     {
         super.readEntityFromNBT(compound);
-        if (compound.hasKey("Id", new NBTTagInt(0).getId())) {
+        if (compound.hasKey("Id", new NBTTagInt(0).getId()))
             id = compound.getInteger("Id");
-        }
         if (compound.hasKey("Master", new NBTTagString().getId())) {
             // Add bodyguard to troop
             troop = Troop.getTroop(compound.getString("Master"));
@@ -246,10 +252,43 @@ public class EntityBodyguard extends EntityCreature
     }
 
     @Override
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
+    {
+        ItemStack itemstack = player.getHeldItem(hand);
+        if (!itemstack.isEmpty()) {
+            if (troop == null && itemstack.getItem() == Items.GOLD_INGOT) {
+                if (!player.capabilities.isCreativeMode)
+                    itemstack.shrink(1);
+
+                // Give bodyguard to player
+                this.give(Troop.getTroop(player.getName()));
+
+                return true;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    // WIP
+    public void give(Troop receivingTroop)
+    {
+        if (!world.isRemote) {
+            this.setTroop(receivingTroop);
+            this.putOnColorizedHelmet();
+            // No need to change bg's master, this is done by writeToNBT()
+
+            receivingTroop.addBodyguard(this);
+        }
+    }
+
+    @Override
     public String toString()
     {
         return super.toString() + " " + this.tasks.taskEntries.size() + " " + this.targetTasks.taskEntries.size() + " "
                 + (troop == null ? "no_troop" : troop.getMasterName()) + " alive=" + this.isEntityAlive() + " uuid="
-                + this.getUniqueID() + " armor_damages=" + " hp=" + this.getHealth();
+                + this.getUniqueID() + " hp=" + this.getHealth();
     }
 }

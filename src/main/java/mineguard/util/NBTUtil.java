@@ -14,6 +14,8 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class NBTUtil
 {
+    public static final int UNDEFINED = -1;
+
     public static void writeNBT(String filename, NBTTagCompound compound) throws IOException
     {
         FileOutputStream fileOut = new FileOutputStream(filename);
