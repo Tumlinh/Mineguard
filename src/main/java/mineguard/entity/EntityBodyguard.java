@@ -255,6 +255,9 @@ public class EntityBodyguard extends EntityCreature
     public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
         ItemStack itemstack = player.getHeldItem(hand);
+        if (itemstack.interactWithEntity(player, this, hand))
+            return true;
+
         if (!itemstack.isEmpty()) {
             if (troop == null && itemstack.getItem() == Items.GOLD_INGOT) {
                 if (!player.capabilities.isCreativeMode)
