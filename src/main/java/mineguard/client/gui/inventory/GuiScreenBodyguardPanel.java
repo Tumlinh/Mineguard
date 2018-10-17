@@ -28,7 +28,23 @@ public class GuiScreenBodyguardPanel extends GuiContainer
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRenderer.drawString(bodyguard.getCustomNameTag(), 100, 8, 0x404040);
+        String nameTag = bodyguard.getCustomNameTag();
+        int minX = 80;
+        int maxX = 170;
+        int maxLength = maxX - minX;
+
+        // Shrink name tag
+        int length = fontRenderer.getStringWidth(nameTag);
+        if (length > maxLength) {
+            while (length > maxLength) {
+                nameTag = nameTag.substring(0, nameTag.length() - 1);
+                length = fontRenderer.getStringWidth(nameTag + "...");
+            }
+            nameTag += "...";
+        }
+
+        // Center name tag horizontally
+        fontRenderer.drawString(nameTag, minX + (maxLength - length) / 2, 8, 0x404040);
     }
 
     @Override
