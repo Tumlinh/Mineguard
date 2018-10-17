@@ -285,7 +285,7 @@ public class EntityBodyguard extends EntityCreature
         }
 
         // Open inventory
-        Mineguard.instance.setInteractionTarget(this);
+        EntityUtil.setInteractionTarget(this);
         player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.BODYGUARD_INVENTORY.ordinal(), world, 0, 0, 0);
 
         return true;

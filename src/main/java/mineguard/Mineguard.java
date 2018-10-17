@@ -1,7 +1,6 @@
 package mineguard;
 
 import mineguard.client.gui.GuiHandler;
-import mineguard.entity.EntityBodyguard;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -25,10 +24,6 @@ public class Mineguard
     @SidedProxy(clientSide = "mineguard.client.ClientProxy", serverSide = "mineguard.CommonProxy")
     public static CommonProxy proxy;
 
-    // Dirty inter-class communication
-    // Forge does not seem to allow passing an entity to the GuiHandler
-    private EntityBodyguard interactionTarget;
-
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -46,15 +41,5 @@ public class Mineguard
     public void serverStarting(FMLServerStartingEvent event)
     {
         event.registerServerCommand(new CommandBodyguard());
-    }
-
-    public EntityBodyguard getInteractionTarget()
-    {
-        return interactionTarget;
-    }
-
-    public void setInteractionTarget(EntityBodyguard interactionTarget)
-    {
-        this.interactionTarget = interactionTarget;
     }
 }

@@ -20,6 +20,9 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class EntityUtil
 {
+    // Dirty inter-class communication
+    // Forge does not seem to allow passing an entity to the GuiHandler
+    private static EntityBodyguard interactionTarget;
 
     public static void setEntityAttribute(EntityLivingBase entity, IAttribute attribute, double value)
     {
@@ -69,5 +72,15 @@ public class EntityUtil
                 return player;
         }
         return null;
+    }
+
+    public static EntityBodyguard getInteractionTarget()
+    {
+        return interactionTarget;
+    }
+
+    public static void setInteractionTarget(EntityBodyguard interactionTargetIn)
+    {
+        interactionTarget = interactionTargetIn;
     }
 }
