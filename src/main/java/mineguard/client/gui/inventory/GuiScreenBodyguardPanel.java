@@ -3,7 +3,6 @@ package mineguard.client.gui.inventory;
 import mineguard.Mineguard;
 import mineguard.entity.EntityBodyguard;
 import mineguard.inventory.ContainerBodyguardInventory;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;

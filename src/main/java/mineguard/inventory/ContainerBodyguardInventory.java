@@ -1,8 +1,8 @@
 package mineguard.inventory;
 
 import javax.annotation.Nullable;
-import mineguard.Mineguard;
 import mineguard.entity.EntityBodyguard;
+import mineguard.handler.TextureRegister;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -21,7 +21,7 @@ public class ContainerBodyguardInventory extends Container
             EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET };
     public static final EntityEquipmentSlot[] EQUIPMENT_HAND_SLOTS = new EntityEquipmentSlot[] {
             EntityEquipmentSlot.MAINHAND, EntityEquipmentSlot.OFFHAND };
-    private static final String[] EMPTY_HAND_SLOT_NAMES = { Mineguard.MODID + ":items/empty_armor_slot_mainhand",
+    private static final String[] EMPTY_HAND_SLOT_NAMES = { TextureRegister.EMPTY_ARMOR_SLOT_MAINHAND_NAME,
             "minecraft:items/empty_armor_slot_shield" };
 
     private EntityBodyguard bodyguard;
