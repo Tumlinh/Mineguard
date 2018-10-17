@@ -2,7 +2,9 @@ package mineguard.entity;
 
 import java.util.IllegalFormatException;
 import javax.annotation.Nullable;
+import mineguard.Mineguard;
 import mineguard.Troop;
+import mineguard.client.gui.GuiHandler;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
@@ -19,6 +21,7 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -34,6 +37,7 @@ public class EntityBodyguard extends EntityCreature
 {
     private int id = NBTUtil.UNDEFINED;
     private Troop troop;
+    private IInventory inventory;
 
     // Called when spawning entities from NBT or hatching egg
     public EntityBodyguard(World worldIn)
@@ -87,6 +91,16 @@ public class EntityBodyguard extends EntityCreature
     public void setTroop(Troop troop)
     {
         this.troop = troop;
+    }
+
+    public IInventory getInventory()
+    {
+        return inventory;
+    }
+
+    public void setInventory(IInventory inventory)
+    {
+        this.inventory = inventory;
     }
 
     public void updateName()
@@ -260,22 +274,23 @@ public class EntityBodyguard extends EntityCreature
 
         if (!itemstack.isEmpty()) {
             if (troop == null && itemstack.getItem() == Items.GOLD_INGOT) {
+                // Give bodyguard to player
                 if (!player.capabilities.isCreativeMode)
                     itemstack.shrink(1);
 
-                // Give bodyguard to player
                 this.give(Troop.getTroop(player.getName()));
 
                 return true;
             }
-
-            return true;
         }
 
-        return false;
+        // Open inventory
+        Mineguard.instance.setInteractionTarget(this);
+        player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.BODYGUARD_INVENTORY.ordinal(), world, 0, 0, 0);
+
+        return true;
     }
 
-    // WIP
     public void give(Troop receivingTroop)
     {
         if (!world.isRemote) {
@@ -292,6 +307,6 @@ public class EntityBodyguard extends EntityCreature
     {
         return super.toString() + " " + this.tasks.taskEntries.size() + " " + this.targetTasks.taskEntries.size() + " "
                 + (troop == null ? "no_troop" : troop.getMasterName()) + " alive=" + this.isEntityAlive() + " uuid="
-                + this.getUniqueID() + " hp=" + this.getHealth();
+                + this.getUniqueID() + " hp=" + this.getHealth() + " " + inventory;
     }
 }
