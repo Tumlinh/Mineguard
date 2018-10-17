@@ -113,8 +113,7 @@ public class ContainerBodyguardInventory extends Container
     @Override
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return bodyguard.isEntityAlive() && bodyguard.getTroop() != null
-                && bodyguard.getTroop().getMaster() == playerIn;
+        return bodyguard.canInteractWith(playerIn);
     }
 
     @Override
@@ -128,27 +127,45 @@ public class ContainerBodyguardInventory extends Container
             itemstack = itemstack1.copy();
             EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
 
+            // Move equipment from bodyguard's inventory to player
             if (index >= 0 && index <= 5) {
                 if (!this.mergeItemStack(itemstack1, 6, 42, false))
                     return ItemStack.EMPTY;
-            } else if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR
+            }
+
+            // Move armor equipment from player inventory to bodyguard's
+            else if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR
                     && this.isEmpty(5 - entityequipmentslot.getIndex())) {
                 int i = 5 - entityequipmentslot.getIndex();
                 if (!this.mergeItemStack(itemstack1, i, i + 1, false))
                     return ItemStack.EMPTY;
-            } else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && (this.isEmpty(0) || this.isEmpty(1))) {
+            }
+
+            // Move off-hand item (usually a shield) to bodyguard's inventory
+            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && (this.isEmpty(0) || this.isEmpty(1))) {
                 if (!this.mergeItemStack(itemstack1, 0, 2, true))
                     return ItemStack.EMPTY;
-            } else if (entityequipmentslot == EntityEquipmentSlot.MAINHAND && (this.isEmpty(0) || this.isEmpty(1))) {
+            }
+
+            // Move main-hand item (can be anything) to bodyguard's inventory
+            else if (entityequipmentslot == EntityEquipmentSlot.MAINHAND && (this.isEmpty(0) || this.isEmpty(1))) {
                 if (!this.mergeItemStack(itemstack1, 0, 2, false))
                     return ItemStack.EMPTY;
-            } else if (index >= 6 && index < 33) {
+            }
+
+            // Move any item from player's large inventory to main inventory
+            else if (index >= 6 && index < 33) {
                 if (!this.mergeItemStack(itemstack1, 33, 42, false))
                     return ItemStack.EMPTY;
-            } else if (index >= 33 && index < 42) {
+            }
+
+            // Move any item from player's main inventory to large inventory
+            else if (index >= 33 && index < 42) {
                 if (!this.mergeItemStack(itemstack1, 6, 33, false))
                     return ItemStack.EMPTY;
-            } else if (!this.mergeItemStack(itemstack1, 6, 42, false)) {
+            }
+
+            else if (!this.mergeItemStack(itemstack1, 6, 42, false)) {
                 return ItemStack.EMPTY;
             }
 
@@ -161,7 +178,6 @@ public class ContainerBodyguardInventory extends Container
                 return ItemStack.EMPTY;
 
             ItemStack itemstack2 = slot.onTake(playerIn, itemstack1);
-
             if (index == 0)
                 playerIn.dropItem(itemstack2, false);
         }

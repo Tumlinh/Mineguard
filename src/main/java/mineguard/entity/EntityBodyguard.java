@@ -200,10 +200,10 @@ public class EntityBodyguard extends EntityCreature
     {
         super.readEntityFromNBT(compound);
         if (compound.hasKey("Id", new NBTTagInt(0).getId()))
-            id = compound.getInteger("Id");
+            this.setId(compound.getInteger("Id"));
         if (compound.hasKey("Master", new NBTTagString().getId())) {
             // Add bodyguard to troop
-            troop = Troop.getTroop(compound.getString("Master"));
+            this.setTroop(Troop.getTroop(compound.getString("Master")));
             troop.addBodyguard(this);
         }
     }
@@ -265,6 +265,13 @@ public class EntityBodyguard extends EntityCreature
         return flag;
     }
 
+    public boolean canInteractWith(EntityPlayer playerIn)
+    {
+        // WIP
+        return true;
+        //return this.isEntityAlive() && troop != null && troop.getMaster() == playerIn;
+    }
+
     @Override
     public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
@@ -284,9 +291,10 @@ public class EntityBodyguard extends EntityCreature
             }
         }
 
-        // Open inventory
+        // Open panel
         EntityUtil.setInteractionTarget(this);
-        player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.BODYGUARD_INVENTORY.ordinal(), world, 0, 0, 0);
+        if (this.canInteractWith(player))
+            player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.BODYGUARD_PANEL.ordinal(), world, 0, 0, 0);
 
         return true;
     }
