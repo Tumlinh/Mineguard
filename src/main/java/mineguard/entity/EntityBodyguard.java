@@ -190,6 +190,12 @@ public class EntityBodyguard extends EntityCreature
     }
 
     @Override
+    public boolean canBeLeashedTo(EntityPlayer player)
+    {
+        return false;
+    }
+
+    @Override
     protected float getWaterSlowDown()
     {
         return 0.85F;
@@ -269,7 +275,8 @@ public class EntityBodyguard extends EntityCreature
     {
         // WIP
         return true;
-        //return this.isEntityAlive() && troop != null && troop.getMaster() == playerIn;
+        // return this.isEntityAlive() && troop != null && troop.getMaster() ==
+        // playerIn;
     }
 
     @Override
