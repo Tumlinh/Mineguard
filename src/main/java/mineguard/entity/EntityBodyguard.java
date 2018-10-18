@@ -1,5 +1,6 @@
 package mineguard.entity;
 
+import java.util.Arrays;
 import java.util.IllegalFormatException;
 import javax.annotation.Nullable;
 import mineguard.Mineguard;
@@ -49,6 +50,10 @@ public class EntityBodyguard extends EntityCreature
         super(worldIn);
         this.setSize(0.6F, 1.8F);
         this.enablePersistence();
+
+        // Force equipment drop on death without damaging it
+        Arrays.fill(inventoryHandsDropChances, 2.0F);
+        Arrays.fill(inventoryArmorDropChances, 2.0F);
     }
 
     // Called when spawning new bodyguards as part of a troop
@@ -186,7 +191,7 @@ public class EntityBodyguard extends EntityCreature
     @Override
     public boolean canDropLoot()
     {
-        return false;
+        return true;
     }
 
     @Override
