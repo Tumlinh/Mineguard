@@ -5,7 +5,7 @@ import mineguard.entity.EntityBodyguard;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
-import net.minecraft.client.renderer.entity.RenderBiped;
+import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerArrow;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderBodyguard extends RenderBiped<EntityBodyguard>
+public class RenderBodyguard extends RenderLiving<EntityBodyguard>
 {
     private static final ResourceLocation BODYGUARD_TEXTURE = new ResourceLocation(Mineguard.MODID,
             "textures/entity/bodyguard.png");
@@ -21,9 +21,9 @@ public class RenderBodyguard extends RenderBiped<EntityBodyguard>
     public RenderBodyguard(RenderManager renderManager)
     {
         super(renderManager, new ModelBiped(0.0F, 0.0F, 64, 64), 0.5F);
-        this.addLayer(new LayerHeldItem(this));
         this.addLayer(new LayerBipedArmor(this));
         this.addLayer(new LayerArrow(this));
+        this.addLayer(new LayerHeldItem(this));
     }
 
     /**

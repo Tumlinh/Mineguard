@@ -10,6 +10,9 @@ public class TextureRegister
 {
     public static final String EMPTY_ARMOR_SLOT_MAINHAND_NAME = Mineguard.MODID + ":items/empty_armor_slot_mainhand";
 
+    public static final String BODYGUARD_INVENTORY = Mineguard.MODID
+            + ":textures/gui/container/bodyguard_inventory.png";
+
     @SubscribeEvent
     public void onTextureStitchEventPre(TextureStitchEvent.Pre e)
     {
