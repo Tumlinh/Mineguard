@@ -95,7 +95,7 @@ public class Troop
     public void addBodyguard(EntityBodyguard bg)
     {
         if (bg.getId() == NBTUtil.UNDEFINED)
-            bg.setId(maxIndex++);
+            bg.setId(++maxIndex);
         else if (bg.getId() > maxIndex)
             maxIndex = bg.getId();
 
