@@ -7,6 +7,7 @@ import mineguard.Troop;
 import mineguard.entity.EntityBodyguard;
 import mineguard.settings.Behaviour;
 import mineguard.util.AIUtil;
+import mineguard.util.ItemUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -65,8 +66,10 @@ public class EntityAIBehaviour extends EntityAIBase
 
             // Pick the most dangerous entity (cf. heuristics)
             nearbyEntities.sort(new AIUtil.DistanceSorter(troop.getMaster(), bg));
-            if (!nearbyEntities.isEmpty())
+            if (!nearbyEntities.isEmpty()) {
                 bg.setAttackTarget((EntityLivingBase) nearbyEntities.get(0));
+                ItemUtil.swapHandsIfNeeded(bg);
+            }
         }
 
         // TODO: Aggressive
