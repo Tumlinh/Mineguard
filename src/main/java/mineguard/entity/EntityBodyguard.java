@@ -10,6 +10,8 @@ import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
 import mineguard.util.EntityUtil;
+import mineguard.util.ItemUtil;
+import mineguard.util.ItemUtil.WeaponClass;
 import mineguard.util.NBTUtil;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -19,10 +21,13 @@ import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAISwimming;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -50,10 +55,12 @@ public class EntityBodyguard extends EntityCreature
         super(worldIn);
         this.setSize(0.6F, 1.8F);
         this.enablePersistence();
+        this.setCanPickUpLoot(true);
 
-        // Force equipment drop on death without damaging it
+        // Force equipment drop on death without damaging it, except for the helmet
         Arrays.fill(inventoryHandsDropChances, 2.0F);
         Arrays.fill(inventoryArmorDropChances, 2.0F);
+        inventoryArmorDropChances[EntityEquipmentSlot.HEAD.getIndex()] = 0.0F;
     }
 
     // Called when spawning new bodyguards as part of a troop
@@ -274,6 +281,127 @@ public class EntityBodyguard extends EntityCreature
         }
 
         return flag;
+    }
+
+    @Override
+    protected boolean canEquipItem(ItemStack stack)
+    {
+        // Prevent replacing helmet in case one is picked up
+        return this.getTroop() == null || getSlotForItemStack(stack) != EntityEquipmentSlot.HEAD;
+    }
+
+    @Override
+    protected void updateEquipmentIfNeeded(EntityItem itemEntity)
+    {
+        ItemStack stackOnFloor = itemEntity.getItem();
+        Item itemOnFloor = stackOnFloor.getItem();
+        ItemStack sameItemStack = this.getItemStackFromSlot(getSlotForItemStack(stackOnFloor));
+        ItemStack stackToDrop = null;
+        EntityEquipmentSlot targetSlot = null;
+
+        // Process weapons (armor equipment is not considered a weapon)
+        if (ItemUtil.isWeapon(itemOnFloor)) {
+            ItemStack mainHand = this.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+            ItemStack offHand = this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+            WeaponClass mainHandClass = ItemUtil.getWeaponClass(mainHand.getItem());
+            WeaponClass offHandClass = ItemUtil.getWeaponClass(offHand.getItem());
+            WeaponClass itemOnFloorClass = ItemUtil.getWeaponClass(itemOnFloor);
+            double itemOnFloorScore = ItemUtil.getWeaponScore(this, stackOnFloor);
+            double mainHandScore = ItemUtil.getWeaponScore(this, mainHand);
+            double offHandScore = ItemUtil.getWeaponScore(this, offHand);
+
+            if (mainHand.isEmpty()) {
+                targetSlot = EntityEquipmentSlot.MAINHAND;
+            } else if (offHand.isEmpty()) {
+                targetSlot = EntityEquipmentSlot.OFFHAND;
+            } else {
+                // One hand is not a weapon: keep it (can be used by the player to make
+                // bodyguards carry items)
+                if (!ItemUtil.isWeapon(mainHand.getItem())) {
+                    // Try to drop the other hand
+                    if ((itemOnFloorClass == offHandClass && offHandScore < itemOnFloorScore)
+                            || (itemOnFloorClass != WeaponClass.SHIELD && offHandClass == WeaponClass.SHIELD)) {
+                        stackToDrop = offHand;
+                        targetSlot = EntityEquipmentSlot.OFFHAND;
+                    }
+                } else if (!ItemUtil.isWeapon(offHand.getItem())) {
+                    // Try to drop the other hand
+                    if ((itemOnFloorClass == mainHandClass && mainHandScore < itemOnFloorScore)
+                            || (itemOnFloorClass != WeaponClass.SHIELD && mainHandClass == WeaponClass.SHIELD)) {
+                        stackToDrop = mainHand;
+                        targetSlot = EntityEquipmentSlot.MAINHAND;
+                    }
+                }
+
+                // Every hand is a weapon
+                else {
+                    // Both weapons in hands belong to the same class
+                    if (mainHandClass == offHandClass) {
+                        // Find the worst weapon in hands and try to replace it
+                        if (offHandScore <= mainHandScore
+                                && ((itemOnFloorClass == mainHandClass && offHandScore < itemOnFloorScore)
+                                        || (itemOnFloorClass != mainHandClass))) {
+                            stackToDrop = offHand;
+                            targetSlot = EntityEquipmentSlot.OFFHAND;
+                        } else if ((itemOnFloorClass == mainHandClass && mainHandScore < itemOnFloorScore)
+                                || (itemOnFloorClass != mainHandClass)) {
+                            stackToDrop = mainHand;
+                            targetSlot = EntityEquipmentSlot.MAINHAND;
+                        }
+                    }
+
+                    // Weapons in hands belong to different classes
+                    else {
+                        if (itemOnFloorClass == offHandClass && offHandScore < itemOnFloorScore) {
+                            stackToDrop = offHand;
+                            targetSlot = EntityEquipmentSlot.OFFHAND;
+                        } else if (itemOnFloorClass == mainHandClass && mainHandScore < itemOnFloorScore) {
+                            stackToDrop = mainHand;
+                            targetSlot = EntityEquipmentSlot.MAINHAND;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Process armor equipment
+        else if (itemOnFloor instanceof ItemArmor) {
+            if (!(sameItemStack.getItem() instanceof ItemArmor)) {
+                targetSlot = getSlotForItemStack(stackOnFloor);
+            } else if (!EnchantmentHelper.hasBindingCurse(sameItemStack)) {
+                double itemOnFloorScore = ItemUtil.getArmorScore(this, stackOnFloor);
+                double currentItemScore = ItemUtil.getArmorScore(this, sameItemStack);
+                if (currentItemScore < itemOnFloorScore) {
+                    stackToDrop = sameItemStack;
+                    targetSlot = getSlotForItemStack(stackOnFloor);
+                }
+            }
+        }
+
+        if (targetSlot != null && this.canEquipItem(stackOnFloor)) {
+            double dropChance;
+            switch (targetSlot.getSlotType()) {
+            case HAND:
+                dropChance = (double) this.inventoryHandsDropChances[targetSlot.getIndex()];
+                break;
+            case ARMOR:
+                dropChance = (double) this.inventoryArmorDropChances[targetSlot.getIndex()];
+                break;
+            default:
+                dropChance = 2.0D;
+            }
+
+            // Drop item stack
+            if (stackToDrop != null && !stackToDrop.isEmpty() && (double) this.rand.nextFloat() < dropChance)
+                this.entityDropItem(stackToDrop, 0.0F);
+
+            // Equip stack on floor
+            this.setItemStackToSlot(targetSlot, stackOnFloor);
+            this.onItemPickup(itemEntity, stackOnFloor.getCount());
+            itemEntity.setDead();
+
+            ItemUtil.swapHandsIfNeeded(this);
+        }
     }
 
     public boolean canInteractWith(EntityPlayer playerIn)
