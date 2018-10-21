@@ -2,6 +2,8 @@ package mineguard.entity;
 
 import java.util.Arrays;
 import java.util.IllegalFormatException;
+import java.util.Random;
+
 import javax.annotation.Nullable;
 import mineguard.Mineguard;
 import mineguard.Troop;
@@ -26,13 +28,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemBanner;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.tileentity.BannerPattern;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
@@ -48,10 +54,6 @@ public class EntityBodyguard extends EntityCreature
     // Called when spawning entities from NBT or hatching egg
     public EntityBodyguard(World worldIn)
     {
-        // XXX: this constructor may cause unpredictable behaviours
-        // TODO:
-        // #1. Disable spawn from eggs
-        // #2. Add bodyguard to player's troop (call other constructor)
         super(worldIn);
         this.setSize(0.6F, 1.8F);
         this.enablePersistence();
@@ -81,6 +83,7 @@ public class EntityBodyguard extends EntityCreature
         this.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE));
         this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.DIAMOND_LEGGINGS));
         this.putOnColorizedHelmet();
+        this.putOnFunkyShield();
 
         ((PathNavigateGround) this.getNavigator()).setCanSwim(true);
     }
@@ -136,6 +139,29 @@ public class EntityBodyguard extends EntityCreature
 
         Items.LEATHER_HELMET.setColor(helmet, troop.getSettings().getColor());
         this.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
+    }
+
+    public void putOnFunkyShield()
+    {
+        NBTTagList patterns = new NBTTagList();
+        int patternIterations = new Random().nextInt(4);
+        for (int i = 0; i < patternIterations; i++) {
+            BannerPattern pattern = BannerPattern.values()[new Random().nextInt(BannerPattern.values().length)];
+            int color = new Random().nextInt(16);
+
+            NBTTagCompound patternCompound = new NBTTagCompound();
+            patternCompound.setString("Pattern", pattern.getHashname());
+            patternCompound.setInteger("Color", color);
+            patterns.appendTag(patternCompound);
+        }
+
+        int bannerColor = new Random().nextInt(16);
+        ItemStack shield = new ItemStack(Items.SHIELD);
+        NBTTagCompound shieldCompound = shield.getOrCreateSubCompound("BlockEntityTag");
+        shieldCompound.setTag("Patterns", patterns);
+        shieldCompound.setInteger("Base", bannerColor);
+
+        this.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, shield);
     }
 
     @Override
