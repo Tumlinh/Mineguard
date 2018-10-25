@@ -185,6 +185,12 @@ public class ContainerBodyguardInventory extends Container
         return itemstack;
     }
 
+    @Override
+    public void onContainerClosed(EntityPlayer playerIn)
+    {
+        bodyguard.setContainerOpen(false);
+    }
+
     private boolean isEmpty(int slotIndex)
     {
         return !((Slot) this.inventorySlots.get(slotIndex)).getHasStack();

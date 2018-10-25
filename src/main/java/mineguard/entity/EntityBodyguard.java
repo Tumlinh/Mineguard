@@ -3,7 +3,6 @@ package mineguard.entity;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.Random;
-
 import javax.annotation.Nullable;
 import mineguard.Mineguard;
 import mineguard.Troop;
@@ -28,10 +27,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemBanner;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -50,6 +47,7 @@ public class EntityBodyguard extends EntityCreature
     private int id = NBTUtil.UNDEFINED;
     private Troop troop;
     private IInventory inventory;
+    private boolean containerOpen = false;
 
     // Called when spawning entities from NBT or hatching egg
     public EntityBodyguard(World worldIn)
@@ -404,7 +402,7 @@ public class EntityBodyguard extends EntityCreature
             }
         }
 
-        if (targetSlot != null && this.canEquipItem(stackOnFloor)) {
+        if (targetSlot != null && this.canEquipItem(stackOnFloor) && !this.isContainerOpen()) {
             double dropChance;
             switch (targetSlot.getSlotType()) {
             case HAND:
@@ -459,10 +457,22 @@ public class EntityBodyguard extends EntityCreature
 
         // Open panel
         EntityUtil.setInteractionTarget(this);
-        if (this.canInteractWith(player))
+        if (this.canInteractWith(player)) {
+            this.setContainerOpen(true);
             player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.BODYGUARD_PANEL.ordinal(), world, 0, 0, 0);
+        }
 
         return true;
+    }
+
+    public boolean isContainerOpen()
+    {
+        return containerOpen;
+    }
+
+    public void setContainerOpen(boolean containerOpen)
+    {
+        this.containerOpen = containerOpen;
     }
 
     public void give(Troop receivingTroop)
