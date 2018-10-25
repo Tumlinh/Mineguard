@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 import mineguard.Troop;
 import mineguard.entity.EntityBodyguard;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,7 +15,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -65,8 +65,14 @@ public class EntityUtil
 
     public static EntityPlayer getPlayerFromName(String name)
     {
+        World[] worlds = null;
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-        for (WorldServer world : server.worlds) {
+        if (server == null)
+            worlds = new World[] { Minecraft.getMinecraft().world };
+        else
+            worlds = server.worlds;
+
+        for (World world : worlds) {
             EntityPlayer player = world.getPlayerEntityByName(name);
             if (player != null)
                 return player;
