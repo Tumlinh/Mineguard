@@ -430,10 +430,7 @@ public class EntityBodyguard extends EntityCreature
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        // WIP
-        return true;
-        // return this.isEntityAlive() && troop != null && troop.getMaster() ==
-        // playerIn;
+        return this.isEntityAlive() && troop != null && troop.getMaster() == playerIn;
     }
 
     @Override
