@@ -1,13 +1,18 @@
 package mineguard.client.gui.inventory;
 
+import java.util.List;
 import mineguard.entity.EntityBodyguard;
 import mineguard.handler.TextureRegister;
 import mineguard.inventory.ContainerBodyguardInventory;
+import mineguard.util.ItemUtil;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -70,5 +75,22 @@ public class GuiScreenBodyguardPanel extends GuiContainer
 
         super.drawScreen(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
+    }
+
+    @Override
+    public List<String> getItemToolTip(ItemStack itemStack)
+    {
+        List<String> list = ItemUtil.getTooltip(itemStack, bodyguard, this.mc.player,
+                this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED
+                        : ITooltipFlag.TooltipFlags.NORMAL);
+
+        for (int i = 0; i < list.size(); i++) {
+            if (i == 0)
+                list.set(i, itemStack.getRarity().rarityColor + (String) list.get(i));
+            else
+                list.set(i, TextFormatting.GRAY + (String) list.get(i));
+        }
+
+        return list;
     }
 }
