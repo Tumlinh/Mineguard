@@ -2,14 +2,12 @@ package mineguard.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
@@ -284,42 +282,13 @@ public class ItemUtil
                     boolean flag = false;
 
                     if (entity != null) {
-                        // Get ATTACK_DAMAGE_MODIFIER through reflection
-                        Field ATTACK_DAMAGE_MODIFIER_field = null;
-                        try {
-                            ATTACK_DAMAGE_MODIFIER_field = Item.class.getDeclaredField("ATTACK_DAMAGE_MODIFIER");
-                        } catch (NoSuchFieldException | SecurityException e) {
-                            e.printStackTrace();
-                        }
-                        ATTACK_DAMAGE_MODIFIER_field.setAccessible(true);
-                        UUID ATTACK_DAMAGE_MODIFIER = null;
-                        try {
-                            ATTACK_DAMAGE_MODIFIER = (UUID) ATTACK_DAMAGE_MODIFIER_field.get(null);
-                        } catch (IllegalArgumentException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
 
-                        // Get ATTACK_SPEED_MODIFIER through reflection
-                        Field ATTACK_SPEED_MODIFIER_field = null;
-                        try {
-                            ATTACK_SPEED_MODIFIER_field = Item.class.getDeclaredField("ATTACK_SPEED_MODIFIER");
-                        } catch (NoSuchFieldException | SecurityException e) {
-                            e.printStackTrace();
-                        }
-                        ATTACK_SPEED_MODIFIER_field.setAccessible(true);
-                        UUID ATTACK_SPEED_MODIFIER = null;
-                        try {
-                            ATTACK_SPEED_MODIFIER = (UUID) ATTACK_SPEED_MODIFIER_field.get(null);
-                        } catch (IllegalArgumentException | IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (attributemodifier.getID() == ATTACK_DAMAGE_MODIFIER) {
+                        if (attributemodifier.getID() == Item.ATTACK_DAMAGE_MODIFIER) {
                             d0 = d0 + entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue();
                             d0 = d0 + (double) EnchantmentHelper.getModifierForCreature(itemStack,
                                     EnumCreatureAttribute.UNDEFINED);
                             flag = true;
-                        } else if (attributemodifier.getID() == ATTACK_SPEED_MODIFIER) {
+                        } else if (attributemodifier.getID() == Item.ATTACK_SPEED_MODIFIER) {
                             d0 += entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getBaseValue();
                             flag = true;
                         }
