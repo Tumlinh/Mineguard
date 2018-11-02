@@ -173,7 +173,7 @@ public class Troop
         if (center == null)
             return null;
 
-        double posX = 0, posY = center.y, posZ = 0;
+        double posX = center.x, posY = center.y, posZ = center.z;
         double perimeter, linearPos;
         double size = settings.getSize();
 
