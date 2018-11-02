@@ -6,7 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import mineguard.Mineguard;
 import mineguard.Troop;
-import mineguard.client.gui.GuiHandler;
+import mineguard.client.gui.troop.GuiHandler;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
