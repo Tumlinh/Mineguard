@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import mineguard.Troop;
 import mineguard.client.ClientProxy;
 import mineguard.client.gui.troop.button.GuiButtonSize;
 import mineguard.client.gui.troop.button.GuiButtonSetting;
@@ -37,9 +36,6 @@ public class GuiTroopController extends GuiScreen
     {
         guiLeft = (width - xSize) / 2;
         guiTop = (height - ySize) / 2;
-
-        // Fetch troop settings
-        GuiButtonSetting.settings = Troop.getTroop(this.mc.player.getName()).getSettings();
 
         // Pre-initialise buttons
         GuiButtonHalt HALT = new GuiButtonHalt(0, "Halt (H)");

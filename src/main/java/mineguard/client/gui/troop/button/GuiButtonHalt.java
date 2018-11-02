@@ -1,5 +1,7 @@
 package mineguard.client.gui.troop.button;
 
+import mineguard.client.ClientProxy;
+
 public class GuiButtonHalt extends GuiButtonImage
 {
     public GuiButtonHalt(int buttonId, int x, int y, int textureX, int textureY, String hoveringText)
@@ -18,17 +20,18 @@ public class GuiButtonHalt extends GuiButtonImage
     {
         this.setSelected(!this.isSelected());
         this.writeSetting();
+        super.writeSetting();
     }
 
     @Override
     public void readSetting()
     {
-        this.setSelected(!settings.isFollowing());
+        this.setSelected(!ClientProxy.getSettings().isFollowing());
     }
 
     @Override
     public void writeSetting()
     {
-        settings.setFollow(!this.isSelected());
+        ClientProxy.getSettings().setFollow(!this.isSelected());
     }
 }

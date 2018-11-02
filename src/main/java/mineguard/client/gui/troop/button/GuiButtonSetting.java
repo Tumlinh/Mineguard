@@ -1,12 +1,13 @@
 package mineguard.client.gui.troop.button;
 
-import mineguard.settings.Settings;
+import mineguard.client.ClientProxy;
+import mineguard.network.MessageTroopSettings;
+import mineguard.network.PacketHandler;
+import mineguard.network.MessageTroopSettings.Type;
 import net.minecraft.client.gui.GuiButton;
 
 public abstract class GuiButtonSetting extends GuiButton
 {
-    public static Settings settings;
-
     private boolean hovered;
     private String hoveringText;
 
@@ -40,5 +41,10 @@ public abstract class GuiButtonSetting extends GuiButton
 
     public abstract void readSetting();
 
-    public abstract void writeSetting();
+    public void writeSetting()
+    {
+        // Send settings to server
+        MessageTroopSettings message = new MessageTroopSettings(Type.DATA, ClientProxy.getSettings());
+        PacketHandler.INSTANCE.sendToServer(message);
+    }
 }

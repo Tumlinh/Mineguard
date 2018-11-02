@@ -72,5 +72,6 @@ public abstract class GuiButtonImage extends GuiButtonSetting
     {
         this.setSelected(true);
         this.writeSetting();
+        super.writeSetting();
     }
 }

@@ -2,6 +2,8 @@ package mineguard.client.gui.troop.button;
 
 import org.lwjgl.input.Keyboard;
 
+import mineguard.client.ClientProxy;
+
 public class GuiButtonSize extends GuiButtonRange
 {
     public GuiButtonSize(int buttonId, int x, int y, int width, int height, String rangeName, int minValue,
@@ -30,13 +32,13 @@ public class GuiButtonSize extends GuiButtonRange
     @Override
     public void readSetting()
     {
-        sliderValue = (int) settings.getSize();
+        sliderValue = (int) ClientProxy.getSettings().getSize();
         this.updateSlider();
     }
 
     @Override
     public void writeSetting()
     {
-        settings.setSize(sliderValue);
+        ClientProxy.getSettings().setSize(sliderValue);
     }
 }

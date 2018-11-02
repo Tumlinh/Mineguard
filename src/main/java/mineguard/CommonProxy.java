@@ -4,6 +4,7 @@ import java.io.File;
 import mineguard.entity.EntityBodyguard;
 import mineguard.handler.EntityEvents;
 import mineguard.init.ModConfig;
+import mineguard.network.PacketHandler;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.ResourceLocation;
@@ -32,5 +33,8 @@ public class CommonProxy
                 Biomes.DESERT_HILLS, Biomes.EXTREME_HILLS, Biomes.FOREST, Biomes.FOREST_HILLS, Biomes.MESA,
                 Biomes.PLAINS, Biomes.ROOFED_FOREST, Biomes.SAVANNA, Biomes.TAIGA, Biomes.TAIGA_HILLS };
         EntityRegistry.addSpawn(EntityBodyguard.class, 3, 1, 3, EnumCreatureType.CREATURE, biomes);
+
+        // Register packets
+        PacketHandler.init();
     }
 }

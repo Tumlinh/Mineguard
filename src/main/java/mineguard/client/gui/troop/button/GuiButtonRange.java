@@ -71,7 +71,8 @@ public abstract class GuiButtonRange extends GuiButtonSetting
     @Override
     public void performAction()
     {
-        this.writeSetting();
         this.updateSlider();
+        this.writeSetting();
+        super.writeSetting();
     }
 }

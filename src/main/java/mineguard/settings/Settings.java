@@ -2,12 +2,17 @@ package mineguard.settings;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import io.netty.buffer.ByteBuf;
 import mineguard.Troop;
 import mineguard.init.ModConfig;
 import mineguard.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class Settings
 {
@@ -37,6 +42,10 @@ public class Settings
                 this.writeToNBT();
             }
         }
+    }
+
+    public Settings()
+    {
     }
 
     public Behaviour getBehaviour()
@@ -158,6 +167,9 @@ public class Settings
 
     public void writeToNBT()
     {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+            return;
+
         // Build player settings
         NBTTagCompound playerSettings = new NBTTagCompound();
         playerSettings.setByte("Behaviour", (byte) Behaviour.get(behaviour.getText()).getId());
@@ -227,6 +239,41 @@ public class Settings
                     compound.getDouble("CenterZ"));
         if (compound.hasKey("Dimension"))
             dimension = compound.getInteger("Dimension");
+    }
+
+    public void fromBytes(ByteBuf buf)
+    {
+        behaviour = Behaviour.get(buf.readByte());
+        formation = Formation.get(buf.readByte());
+        color = buf.readInt();
+        size = buf.readDouble();
+        displayName = buf.readBoolean();
+        follow = buf.readBoolean();
+        int nameFormatLength = buf.readInt();
+        nameFormat = (String) buf.readCharSequence(nameFormatLength, StandardCharsets.UTF_8);
+    }
+
+    public void toBytes(ByteBuf buf)
+    {
+        buf.writeByte(behaviour.getId());
+        buf.writeByte(formation.getId());
+        buf.writeInt(color);
+        buf.writeDouble(size);
+        buf.writeBoolean(displayName);
+        buf.writeBoolean(follow);
+        buf.writeInt(nameFormat.length());
+        buf.writeCharSequence(nameFormat, StandardCharsets.UTF_8);
+    }
+
+    public void setSettings(Settings settings)
+    {
+        behaviour = settings.behaviour;
+        formation = settings.formation;
+        color = settings.color;
+        size = settings.size;
+        displayName = settings.displayName;
+        follow = settings.follow;
+        nameFormat = settings.nameFormat;
     }
 
     @Override

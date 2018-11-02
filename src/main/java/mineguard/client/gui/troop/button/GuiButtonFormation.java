@@ -1,5 +1,6 @@
 package mineguard.client.gui.troop.button;
 
+import mineguard.client.ClientProxy;
 import mineguard.settings.Formation;
 
 public class GuiButtonFormation extends GuiButtonImage
@@ -24,7 +25,7 @@ public class GuiButtonFormation extends GuiButtonImage
     @Override
     public void readSetting()
     {
-        if (settings.getFormation() == formation) {
+        if (ClientProxy.getSettings().getFormation() == formation) {
             this.setSelected(true);
             lastSelectedButton = this;
         }
@@ -34,7 +35,7 @@ public class GuiButtonFormation extends GuiButtonImage
     public void writeSetting()
     {
         if (this.isSelected())
-            settings.setFormation(formation);
+            ClientProxy.getSettings().setFormation(formation);
 
         // Unselect previous button
         if (lastSelectedButton != null && lastSelectedButton != this)

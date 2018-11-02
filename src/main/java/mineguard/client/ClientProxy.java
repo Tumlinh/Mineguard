@@ -5,6 +5,7 @@ import mineguard.client.renderer.entity.RenderBodyguard;
 import mineguard.entity.EntityBodyguard;
 import mineguard.handler.KeyboardEvents;
 import mineguard.handler.TextureRegister;
+import mineguard.settings.Settings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -16,6 +17,7 @@ public class ClientProxy extends CommonProxy
 {
     public static KeyBinding TROOP_CONTROLLER_KEYBINDING = new KeyBinding("key.troopController", Keyboard.KEY_G,
             "key.categories.ui"); // TODO: client config
+    private static Settings SETTINGS;
 
     @Override
     public void preInit(FMLPreInitializationEvent event)
@@ -32,5 +34,15 @@ public class ClientProxy extends CommonProxy
 
         // Register key bindings
         ClientRegistry.registerKeyBinding(TROOP_CONTROLLER_KEYBINDING);
+    }
+
+    public static Settings getSettings()
+    {
+        return SETTINGS;
+    }
+
+    public static void setSettings(Settings settings)
+    {
+        SETTINGS = settings;
     }
 }
