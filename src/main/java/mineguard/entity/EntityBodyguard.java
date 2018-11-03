@@ -29,11 +29,16 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.tileentity.BannerPattern;
 import net.minecraft.util.DamageSource;
@@ -44,10 +49,14 @@ import net.minecraft.world.World;
 
 public class EntityBodyguard extends EntityCreature
 {
+    private static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityBodyguard.class,
+            DataSerializers.FLOAT);
+
     private int id = NBTUtil.UNDEFINED;
     private Troop troop;
     private IInventory inventory;
     private boolean containerOpen = false;
+    private long timeSinceRegeneration;
 
     // Called when spawning entities from NBT or hatching egg
     public EntityBodyguard(World worldIn)
@@ -56,6 +65,7 @@ public class EntityBodyguard extends EntityCreature
         this.setSize(0.6F, 1.8F);
         this.enablePersistence();
         this.setCanPickUpLoot(true);
+        timeSinceRegeneration = 0;
 
         // Force equipment drop on death without damaging it, except for the helmet
         Arrays.fill(inventoryHandsDropChances, 2.0F);
@@ -186,6 +196,17 @@ public class EntityBodyguard extends EntityCreature
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.FOLLOW_RANGE, ModConfig.BODYGUARD_FOLLOW_RANGE);
     }
 
+    protected void updateAITasks()
+    {
+        dataManager.set(HEALTH, Float.valueOf(this.getHealth()));
+    }
+
+    protected void entityInit()
+    {
+        super.entityInit();
+        dataManager.register(HEALTH, Float.valueOf(this.getHealth()));
+    }
+
     // XXX: debugging
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
@@ -199,6 +220,24 @@ public class EntityBodyguard extends EntityCreature
     public boolean getCanSpawnHere()
     {
         return super.getCanSpawnHere() && this.getEntityBoundingBox().minY >= 80;
+    }
+
+    @Override
+    public void onEntityUpdate()
+    {
+        super.onEntityUpdate();
+
+        if (dataManager.get(HEALTH) < this.getMaxHealth()) {
+            timeSinceRegeneration++;
+
+            // Regenerate hitpoints
+            if (timeSinceRegeneration >= ModConfig.BODYGUARD_REGENERATION_TIME) {
+                this.heal(1.0F);
+                timeSinceRegeneration = 0;
+            }
+        } else {
+            timeSinceRegeneration = 0;
+        }
     }
 
     @Override
@@ -248,6 +287,8 @@ public class EntityBodyguard extends EntityCreature
             this.setTroop(Troop.getTroop(compound.getString("Master")));
             troop.addBodyguard(this);
         }
+        if (compound.hasKey("LastRegenerationTime", new NBTTagLong(0).getId()))
+            timeSinceRegeneration = compound.getLong("TimeSinceRegeneration");
     }
 
     @Override
@@ -257,6 +298,7 @@ public class EntityBodyguard extends EntityCreature
         if (troop != null) {
             compound.setInteger("Id", id);
             compound.setString("Master", troop.getMasterName());
+            compound.setLong("TimeSinceRegeneration", timeSinceRegeneration);
         }
     }
 
@@ -436,17 +478,26 @@ public class EntityBodyguard extends EntityCreature
     @Override
     public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        ItemStack itemstack = player.getHeldItem(hand);
-        if (itemstack.interactWithEntity(player, this, hand))
+        ItemStack itemStack = player.getHeldItem(hand);
+        if (itemStack.interactWithEntity(player, this, hand))
             return true;
 
-        if (!itemstack.isEmpty()) {
-            if (troop == null && itemstack.getItem() == Items.GOLD_INGOT) {
+        Item item = itemStack.getItem();
+        if (!itemStack.isEmpty()) {
+            if (troop == null && item == Items.GOLD_INGOT) {
                 // Give bodyguard to player
                 if (!player.capabilities.isCreativeMode)
-                    itemstack.shrink(1);
+                    itemStack.shrink(1);
 
                 this.give(Troop.getTroop(player.getName()));
+                return true;
+            } else if (item instanceof ItemFood && dataManager.get(HEALTH) < this.getMaxHealth()) {
+                // Handle eating
+                float regeneration = ((ItemFood) item).getHealAmount(null);
+                this.heal(regeneration);
+
+                if (!player.capabilities.isCreativeMode)
+                    itemStack.shrink(1);
 
                 return true;
             }
