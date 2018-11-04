@@ -96,6 +96,8 @@ public class GuiTroopController extends GuiScreen
         SIZE.width = 80;
         SIZE.height = 20;
         buttonList.add(SIZE);
+
+        Keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -108,6 +110,7 @@ public class GuiTroopController extends GuiScreen
         for (Integer keyCode2 : keyBindings.keySet()) {
             if (keyCode2.equals(keyCode)) {
                 keyBindings.get(keyCode).button.onKeyTyped(keyCode);
+
                 if (keyBindings.get(keyCode).closeWindow)
                     this.closeGui();
             }
@@ -153,6 +156,12 @@ public class GuiTroopController extends GuiScreen
     {
         mc.displayGuiScreen(null);
         mc.setIngameFocus();
+    }
+
+    @Override
+    public void onGuiClosed()
+    {
+        Keyboard.enableRepeatEvents(false);
     }
 
     @Override
