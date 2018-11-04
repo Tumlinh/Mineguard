@@ -1,13 +1,17 @@
 package mineguard.client.gui.inventory;
 
 import java.util.List;
+import mineguard.client.renderer.entity.RenderBodyguard;
 import mineguard.entity.EntityBodyguard;
 import mineguard.handler.TextureRegister;
 import mineguard.inventory.ContainerBodyguardInventory;
 import mineguard.util.ItemUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -61,8 +65,8 @@ public class GuiScreenBodyguardPanel extends GuiContainer
         int marginVertical = (height - ySize) / 2;
         this.drawTexturedModalRect(marginHorizontal, marginVertical, 0, 0, xSize, ySize);
 
-        // Draw entity preview
-        GuiInventory.drawEntityOnScreen(guiLeft + 51, guiTop + 75, 30, (float) (guiLeft + 51) - oldMouseX,
+        // Render entity miniature, free of name tag and health bar
+        renderMiniature(guiLeft + 51, guiTop + 75, 30, (float) (guiLeft + 51) - oldMouseX,
                 (float) (guiTop + 75 - 50) - oldMouseY, bodyguard);
     }
 
@@ -92,5 +96,48 @@ public class GuiScreenBodyguardPanel extends GuiContainer
         }
 
         return list;
+    }
+
+    private static void renderMiniature(int posX, int posY, int scale, float mouseX, float mouseY,
+            EntityBodyguard entity)
+    {
+        GlStateManager.enableColorMaterial();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate((float) posX, (float) posY, 50.0F);
+        GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
+        GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+        float yawOffset = entity.renderYawOffset;
+        float yaw = entity.rotationYaw;
+        float pitch = entity.rotationPitch;
+        float prevYawHead = entity.prevRotationYawHead;
+        float yawHead = entity.rotationYawHead;
+        GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
+        RenderHelper.enableStandardItemLighting();
+        GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-((float) Math.atan((double) (mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+        entity.renderYawOffset = (float) Math.atan((double) (mouseX / 40.0F)) * 20.0F;
+        entity.rotationYaw = (float) Math.atan((double) (mouseX / 40.0F)) * 40.0F;
+        entity.rotationPitch = -((float) Math.atan((double) (mouseY / 40.0F))) * 20.0F;
+        entity.rotationYawHead = entity.rotationYaw;
+        entity.prevRotationYawHead = entity.rotationYaw;
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
+        renderManager.setPlayerViewY(180.0F);
+        renderManager.setRenderShadow(false);
+        RenderBodyguard.setRenderingMiniature(true);
+        renderManager.renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        RenderBodyguard.setRenderingMiniature(false);
+        renderManager.setRenderShadow(true);
+        entity.renderYawOffset = yawOffset;
+        entity.rotationYaw = yaw;
+        entity.rotationPitch = pitch;
+        entity.prevRotationYawHead = prevYawHead;
+        entity.rotationYawHead = yawHead;
+        GlStateManager.popMatrix();
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GlStateManager.disableTexture2D();
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 }

@@ -1,8 +1,11 @@
 package mineguard.client.renderer.entity;
 
+import java.awt.Color;
 import mineguard.Mineguard;
 import mineguard.entity.EntityBodyguard;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.model.ModelBiped;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderLiving;
@@ -17,6 +20,7 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
 {
     private static final ResourceLocation BODYGUARD_TEXTURE = new ResourceLocation(Mineguard.MODID,
             "textures/entity/bodyguard.png");
+    private static boolean isRenderingMiniature = false;
 
     public RenderBodyguard(RenderManager renderManager)
     {
@@ -26,23 +30,95 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
         this.addLayer(new LayerHeldItem(this));
     }
 
-    /**
-     * Returns the location of an entity's texture. Doesn't seem to be called unless
-     * you call Render.bindEntityTexture.
-     */
+    public static void setRenderingMiniature(boolean rendering)
+    {
+        isRenderingMiniature = rendering;
+    }
+
+    @Override
     protected ResourceLocation getEntityTexture(EntityBodyguard bodyguard)
     {
         return BODYGUARD_TEXTURE;
     }
 
-    /**
-     * Allows the render to do state modifications necessary before the model is
-     * rendered.
-     */
-    protected void preRenderCallback(EntityBodyguard entity, float partialTickTime)
+    @Override
+    protected void preRenderCallback(EntityBodyguard entityIn, float partialTickTime)
     {
         // Set the same render size than the player's (1.8 blocks high)
         GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
+    }
+
+    @Override
+    protected void renderLivingLabel(EntityBodyguard entityIn, String str, double x, double y, double z,
+            int maxDistance)
+    {
+        double d0 = entityIn.getDistanceSq(this.renderManager.renderViewEntity);
+        if (d0 <= (double) (maxDistance * maxDistance)) {
+            boolean isSneaking = entityIn.isSneaking();
+            float viewerYaw = this.renderManager.playerViewY;
+            float viewerPitch = this.renderManager.playerViewX;
+            boolean isThirdPersonFrontal = this.renderManager.options.thirdPersonView == 2;
+            float f = entityIn.height + 0.5F - (isSneaking ? 0.25F : 0.0F);
+
+            int verticalShift = "deadmau5".equals(str) ? -10 : -0;
+            if (this.canRenderHealthBar(entityIn))
+                // Free up space for the health bar
+                verticalShift -= 10;
+
+            EntityRenderer.drawNameplate(this.getFontRendererFromRenderManager(), str, (float) x, (float) y + f,
+                    (float) z, verticalShift, viewerYaw, viewerPitch, isThirdPersonFrontal, isSneaking);
+        }
+    }
+
+    private void displayHealthBar(EntityBodyguard entityIn, String str, double x, double y, double z, int maxDistance)
+    {
+        double d0 = entityIn.getDistanceSq(this.renderManager.renderViewEntity);
+        if (d0 <= (double) (maxDistance * maxDistance)) {
+            boolean isSneaking = entityIn.isSneaking();
+            float viewerYaw = this.renderManager.playerViewY;
+            float viewerPitch = this.renderManager.playerViewX;
+            boolean isThirdPersonFrontal = this.renderManager.options.thirdPersonView == 2;
+            float f = entityIn.height + 0.5F - (isSneaking ? 0.25F : 0.0F);
+
+            int barLength = 40;
+            int greenLength = Math
+                    .round(barLength * entityIn.getDataManager().get(EntityBodyguard.HEALTH) / entityIn.getMaxHealth());
+            int barColor = Color.GREEN.getRGB();
+
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(x, y + f, z);
+            GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
+            GlStateManager.scale(0.025, 0.025, 0.025);
+            GlStateManager.translate(0, entityIn.height - 8, 0);
+            GlStateManager.disableLighting();
+            GlStateManager.disableDepth();
+            Gui.drawRect(barLength / 2 - greenLength, 0, barLength / 2, barLength / 7, barColor);
+            Gui.drawRect(-barLength / 2, 0, barLength / 2 - greenLength, barLength / 7, 0xa0000000);
+            GlStateManager.enableDepth();
+            GlStateManager.enableLighting();
+            GlStateManager.popMatrix();
+        }
+    }
+
+    @Override
+    // Gross hook but works best
+    public void renderName(EntityBodyguard entityIn, double x, double y, double z)
+    {
+        if (!isRenderingMiniature) {
+            if (this.canRenderName(entityIn))
+                this.renderLivingLabel(entityIn, entityIn.getDisplayName().getFormattedText(), x, y, z, 64);
+
+            if (this.canRenderHealthBar(entityIn))
+                this.displayHealthBar(entityIn, entityIn.getDisplayName().getFormattedText(), x, y, z, 64);
+        }
+    }
+
+    private boolean canRenderHealthBar(EntityBodyguard entityIn)
+    {
+        boolean alwaysRender = true; // TODO: config (client and/or server)
+        return alwaysRender || entityIn == this.renderManager.pointedEntity;
     }
 
     public static class RenderBodyguardFactory implements IRenderFactory<EntityBodyguard>

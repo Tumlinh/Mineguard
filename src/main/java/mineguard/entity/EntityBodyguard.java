@@ -49,7 +49,7 @@ import net.minecraft.world.World;
 
 public class EntityBodyguard extends EntityCreature
 {
-    private static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityBodyguard.class,
+    public static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityBodyguard.class,
             DataSerializers.FLOAT);
 
     private int id = NBTUtil.UNDEFINED;
