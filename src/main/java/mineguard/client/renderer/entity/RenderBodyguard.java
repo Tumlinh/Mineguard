@@ -13,6 +13,9 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.layers.LayerArrow;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
@@ -83,22 +86,29 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
             int barLength = 40;
             int greenLength = Math
                     .round(barLength * entityIn.getDataManager().get(EntityBodyguard.HEALTH) / entityIn.getMaxHealth());
-            int barColor = Color.GREEN.getRGB();
 
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(x, y + f, z);
-            GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
-            GlStateManager.scale(0.025, 0.025, 0.025);
-            GlStateManager.translate(0, entityIn.height - 8, 0);
-            GlStateManager.disableLighting();
-            GlStateManager.disableDepth();
-            Gui.drawRect(barLength / 2 - greenLength, 0, barLength / 2, barLength / 7, barColor);
-            Gui.drawRect(-barLength / 2, 0, barLength / 2 - greenLength, barLength / 7, 0xa0000000);
-            GlStateManager.enableDepth();
-            GlStateManager.enableLighting();
-            GlStateManager.popMatrix();
+            // Get troop color from helmet (disgusting but avoids sync)
+            int barColor = Color.GREEN.getRGB();
+            ItemStack helmet = entityIn.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
+            if (helmet != null && helmet.getItem() instanceof ItemArmor)
+                barColor = ((ItemArmor) helmet.getItem()).getColor(helmet);
+
+            if (entityIn.getDataManager().get(EntityBodyguard.MASTER_NAME) != "") {
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(x, y + f, z);
+                GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
+                GlStateManager.scale(0.025, 0.025, 0.025);
+                GlStateManager.translate(0, entityIn.height - 8, 0);
+                GlStateManager.disableLighting();
+                GlStateManager.disableDepth();
+                Gui.drawRect(barLength / 2 - greenLength, 0, barLength / 2, barLength / 7, barColor);
+                Gui.drawRect(-barLength / 2, 0, barLength / 2 - greenLength, barLength / 7, 0x40000000);
+                GlStateManager.enableDepth();
+                GlStateManager.enableLighting();
+                GlStateManager.popMatrix();
+            }
         }
     }
 

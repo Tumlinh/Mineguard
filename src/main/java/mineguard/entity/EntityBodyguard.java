@@ -51,6 +51,8 @@ public class EntityBodyguard extends EntityCreature
 {
     public static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityBodyguard.class,
             DataSerializers.FLOAT);
+    public static final DataParameter<String> MASTER_NAME = EntityDataManager.<String>createKey(EntityBodyguard.class,
+            DataSerializers.STRING);
 
     private int id = NBTUtil.UNDEFINED;
     private Troop troop;
@@ -66,6 +68,8 @@ public class EntityBodyguard extends EntityCreature
         this.enablePersistence();
         this.setCanPickUpLoot(true);
         timeSinceRegeneration = 0;
+
+        ((PathNavigateGround) this.getNavigator()).setCanSwim(true);
 
         // Force equipment drop on death without damaging it, except for the helmet
         Arrays.fill(inventoryHandsDropChances, 2.0F);
@@ -92,8 +96,6 @@ public class EntityBodyguard extends EntityCreature
         this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(Items.DIAMOND_LEGGINGS));
         this.putOnColorizedHelmet();
         this.putOnFunkyShield();
-
-        ((PathNavigateGround) this.getNavigator()).setCanSwim(true);
     }
 
     public int getId()
@@ -199,12 +201,14 @@ public class EntityBodyguard extends EntityCreature
     protected void updateAITasks()
     {
         dataManager.set(HEALTH, Float.valueOf(this.getHealth()));
+        dataManager.set(MASTER_NAME, troop != null ? troop.getMasterName() : "");
     }
 
     protected void entityInit()
     {
         super.entityInit();
         dataManager.register(HEALTH, Float.valueOf(this.getHealth()));
+        dataManager.register(MASTER_NAME, troop != null ? troop.getMasterName() : "");
     }
 
     // XXX: debugging
@@ -353,7 +357,7 @@ public class EntityBodyguard extends EntityCreature
     protected boolean canEquipItem(ItemStack stack)
     {
         // Prevent replacing helmet in case one is picked up
-        return this.getTroop() == null || getSlotForItemStack(stack) != EntityEquipmentSlot.HEAD;
+        return dataManager.get(MASTER_NAME) != "" || getSlotForItemStack(stack) != EntityEquipmentSlot.HEAD;
     }
 
     @Override
@@ -472,7 +476,7 @@ public class EntityBodyguard extends EntityCreature
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return this.isEntityAlive() && troop != null && troop.getMaster() == playerIn;
+        return this.isEntityAlive() && dataManager.get(MASTER_NAME) == playerIn.getName();
     }
 
     @Override
@@ -484,7 +488,7 @@ public class EntityBodyguard extends EntityCreature
 
         Item item = itemStack.getItem();
         if (!itemStack.isEmpty()) {
-            if (troop == null && item == Items.GOLD_INGOT) {
+            if (dataManager.get(MASTER_NAME) == "" && item == Items.GOLD_INGOT) {
                 // Give bodyguard to player
                 if (!player.capabilities.isCreativeMode)
                     itemStack.shrink(1);
