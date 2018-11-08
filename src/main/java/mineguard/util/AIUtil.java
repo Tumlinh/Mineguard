@@ -46,8 +46,13 @@ public class AIUtil
              * Heuristics: priority depends on two elements: the distance between the entity
              * and the master, and the distance between the entity and the bodyguard
              */
-            double d0 = master.getDistanceSq(entity1) + bodyguard.getDistanceSq(entity1) * weight;
-            double d1 = master.getDistanceSq(entity2) + bodyguard.getDistanceSq(entity2) * weight;
+            double d0 = bodyguard.getDistanceSq(entity1) * weight;
+            double d1 = bodyguard.getDistanceSq(entity2) * weight;
+
+            if (master != null) {
+                d0 += master.getDistanceSq(entity1);
+                d1 += master.getDistanceSq(entity2);
+            }
 
             if (d0 < d1) {
                 return -1;

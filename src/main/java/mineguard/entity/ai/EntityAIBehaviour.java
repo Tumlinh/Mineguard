@@ -2,6 +2,8 @@ package mineguard.entity.ai;
 
 import com.google.common.base.Predicate;
 import java.util.List;
+import java.util.Random;
+
 import javax.annotation.Nullable;
 import mineguard.Troop;
 import mineguard.entity.EntityBodyguard;
@@ -11,7 +13,9 @@ import mineguard.util.ItemUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Vec3d;
 
 public class EntityAIBehaviour extends EntityAIBase
 {
@@ -31,58 +35,89 @@ public class EntityAIBehaviour extends EntityAIBase
     public boolean shouldExecute()
     {
         troop = bg.getTroop();
-        return troop != null && troop.getSettings().getBehaviour() != Behaviour.STILL;
+        return troop != null;
     }
 
     @Override
-    public boolean shouldContinueExecuting()
+    public void updateTask()
     {
-        // Workaround to make this task stop from time to time
-        return false;
-    }
+        // Reset attack target
+        bg.setAttackTarget((EntityLivingBase) null);
 
-    @Override
-    public void startExecuting()
-    {
-        // Defensive mode
-        if (troop.getSettings().getBehaviour() == Behaviour.DEFENSIVE && troop.getMaster() != null) {
-            // Get nearby entities
-            AxisAlignedBB box = new AxisAlignedBB(troop.getMaster().posX - boxSize, troop.getMaster().posY - boxSize,
-                    troop.getMaster().posZ - boxSize, troop.getMaster().posX + boxSize,
-                    troop.getMaster().posY + boxSize, troop.getMaster().posZ + boxSize);
-            List<Entity> nearbyEntities = bg.world.getEntitiesInAABBexcluding(troop.getMaster(), box,
-                    new Predicate<Entity>()
-                    {
-                        public boolean apply(@Nullable Entity entity)
-                        {
-                            return AIUtil.isHostile(troop, entity);
+        // Aggressive mode: if no nearby hostile targets, attack any nearby target
+        // sorted by priority
+        if (troop.getSettings().getBehaviour() == Behaviour.AGGRESSIVE) {
+            List<Entity> nearbyHostileTargets = this.getNearbyHostileTargets();
 
-                            /*
-                             * return (entity instanceof EntityLivingBase) && entity != troop.getMaster() &&
-                             * !(entity instanceof EntityPlayer && ((EntityPlayer) entity).isSpectator());
-                             */
-                        }
-                    });
+            // Sort entities by dangerousness (cf. heuristics)
+            nearbyHostileTargets.sort(new AIUtil.DistanceSorter(troop.getMaster(), bg));
 
-            // Pick the most dangerous entity (cf. heuristics)
-            nearbyEntities.sort(new AIUtil.DistanceSorter(troop.getMaster(), bg));
-            if (!nearbyEntities.isEmpty()) {
-                bg.setAttackTarget((EntityLivingBase) nearbyEntities.get(0));
-                ItemUtil.swapHandsIfNeeded(bg);
+            if (!nearbyHostileTargets.isEmpty()) {
+                attackEntity(nearbyHostileTargets.get(0), bg);
+            } else {
+                List<Entity> nearbyTargets = this.getNearbyTargets();
+                nearbyTargets.sort(new AIUtil.DistanceSorter(troop.getMaster(), bg));
+
+                if (!nearbyTargets.isEmpty())
+                    attackEntity(nearbyTargets.get(0), bg);
             }
         }
 
-        // TODO: Aggressive
-        // Like defensive. If there are no threats, attack potential threats (mobs,
-        // iron golems, players not whitelisted)
-        else if (troop.getSettings().getBehaviour() == Behaviour.AGGRESSIVE) {
-
+        // Berserker mode: attack any nearby target except master
+        else if (troop.getSettings().getBehaviour() == Behaviour.BERSERKER) {
+            List<Entity> nearbyTargets = this.getNearbyTargets();
+            attackEntity(nearbyTargets.get(new Random().nextInt(nearbyTargets.size())), bg);
         }
 
-        // TODO: Berserker
-        // Attack any nearby entity except master (do not give a shit about him)
-        else if (troop.getSettings().getBehaviour() == Behaviour.BERSERKER) {
+        // Defensive mode: attack nearby hostile targets sorted by priority
+        else if (troop.getSettings().getBehaviour() == Behaviour.DEFENSIVE) {
+            List<Entity> nearbyHostileTargets = this.getNearbyHostileTargets();
+            nearbyHostileTargets.sort(new AIUtil.DistanceSorter(troop.getMaster(), bg));
 
+            if (!nearbyHostileTargets.isEmpty())
+                attackEntity(nearbyHostileTargets.get(0), bg);
+        }
+    }
+
+    private List<Entity> getNearbyHostileTargets()
+    {
+        List<Entity> nearbyTargets = this.getNearbyEntities(new Predicate<Entity>()
+        {
+            public boolean apply(@Nullable Entity entity)
+            {
+                return AIUtil.isHostile(troop, entity);
+            }
+        });
+        return nearbyTargets;
+    }
+
+    private List<Entity> getNearbyTargets()
+    {
+        List<Entity> nearbyTargets = this.getNearbyEntities(new Predicate<Entity>()
+        {
+            public boolean apply(@Nullable Entity entity)
+            {
+                return (entity instanceof EntityLivingBase) && !(entity instanceof EntityPlayer)
+                        && !AIUtil.isFellow(troop, entity);
+            }
+        });
+        return nearbyTargets;
+    }
+
+    private List<Entity> getNearbyEntities(Predicate<Entity> predicate)
+    {
+        // Get nearby entities
+        Vec3d center = troop.getSettings().getCenter();
+        AxisAlignedBB box = new AxisAlignedBB(center.x - boxSize, center.y - boxSize, center.z - boxSize,
+                center.x + boxSize, center.y + boxSize, center.z + boxSize);
+        return bg.world.getEntitiesInAABBexcluding(troop.getMaster(), box, predicate);
+    }
+
+    private static void attackEntity(Entity target, EntityBodyguard bodyguard)
+    {
+        if (target instanceof EntityLivingBase) {
+            bodyguard.setAttackTarget((EntityLivingBase) target);
+            ItemUtil.swapHandsIfNeeded(bodyguard);
         }
     }
 }

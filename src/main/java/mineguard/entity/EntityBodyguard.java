@@ -543,6 +543,6 @@ public class EntityBodyguard extends EntityCreature
     {
         return super.toString() + " " + this.tasks.taskEntries.size() + " " + this.targetTasks.taskEntries.size() + " "
                 + (troop == null ? "no_troop" : troop.getMasterName()) + " alive=" + this.isEntityAlive() + " uuid="
-                + this.getUniqueID() + " hp=" + this.getHealth() + " " + inventory;
+                + this.getUniqueID() + " hp=" + this.getHealth();
     }
 }
