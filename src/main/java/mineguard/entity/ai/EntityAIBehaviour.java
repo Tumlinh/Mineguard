@@ -1,6 +1,7 @@
 package mineguard.entity.ai;
 
 import com.google.common.base.Predicate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import mineguard.Troop;
@@ -113,6 +114,9 @@ public class EntityAIBehaviour extends EntityAIBase
     {
         // Get nearby entities
         Vec3d center = troop.getSettings().getCenter();
+        if (center == null)
+            return new ArrayList<Entity>();
+
         AxisAlignedBB box = new AxisAlignedBB(center.x - boxSize, center.y - boxSize, center.z - boxSize,
                 center.x + boxSize, center.y + boxSize, center.z + boxSize);
         return bg.world.getEntitiesInAABBexcluding(troop.getMaster(), box, predicate);

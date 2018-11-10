@@ -93,6 +93,9 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
             if (helmet != null && helmet.getItem() instanceof ItemArmor)
                 barColor = ((ItemArmor) helmet.getItem()).getColor(helmet);
 
+            // Force color opacity
+            barColor = (0xff << 24) + (barColor & 0xffffff);
+
             if (entityIn.getDataManager().get(EntityBodyguard.MASTER_NAME) != "") {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(x, y + f, z);
