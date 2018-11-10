@@ -1,6 +1,9 @@
 package mineguard.util;
 
 import java.util.Comparator;
+
+import javax.annotation.Nullable;
+
 import mineguard.Troop;
 import mineguard.entity.EntityBodyguard;
 import net.minecraft.entity.Entity;
@@ -34,7 +37,7 @@ public class AIUtil
         private final Entity bodyguard;
         private final double weight = 0.2;
 
-        public DistanceSorter(Entity master, Entity bodyguard)
+        public DistanceSorter(@Nullable Entity master, Entity bodyguard)
         {
             this.master = master;
             this.bodyguard = bodyguard;

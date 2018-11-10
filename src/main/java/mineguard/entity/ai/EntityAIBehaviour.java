@@ -2,8 +2,6 @@ package mineguard.entity.ai;
 
 import com.google.common.base.Predicate;
 import java.util.List;
-import java.util.Random;
-
 import javax.annotation.Nullable;
 import mineguard.Troop;
 import mineguard.entity.EntityBodyguard;
@@ -41,8 +39,8 @@ public class EntityAIBehaviour extends EntityAIBase
     @Override
     public void updateTask()
     {
-        // Reset attack target
-        bg.setAttackTarget((EntityLivingBase) null);
+        if (bg.getAttackTarget() != null && !bg.getAttackTarget().isEntityAlive())
+            bg.setAttackTarget((EntityLivingBase) null);
 
         // Aggressive mode: if no nearby hostile targets, attack any nearby target
         // sorted by priority
@@ -66,7 +64,10 @@ public class EntityAIBehaviour extends EntityAIBase
         // Berserker mode: attack any nearby target except master
         else if (troop.getSettings().getBehaviour() == Behaviour.BERSERKER) {
             List<Entity> nearbyTargets = this.getNearbyTargets();
-            attackEntity(nearbyTargets.get(new Random().nextInt(nearbyTargets.size())), bg);
+            nearbyTargets.sort(new AIUtil.DistanceSorter((Entity) null, bg));
+
+            if (!nearbyTargets.isEmpty())
+                attackEntity(nearbyTargets.get(0), bg);
         }
 
         // Defensive mode: attack nearby hostile targets sorted by priority
@@ -76,6 +77,10 @@ public class EntityAIBehaviour extends EntityAIBase
 
             if (!nearbyHostileTargets.isEmpty())
                 attackEntity(nearbyHostileTargets.get(0), bg);
+        }
+
+        else if (troop.getSettings().getBehaviour() == Behaviour.STILL) {
+            bg.setAttackTarget((EntityLivingBase) null);
         }
     }
 
