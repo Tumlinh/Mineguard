@@ -118,6 +118,11 @@ public class Troop
         return bodyguards.size();
     }
 
+    public EntityBodyguard getFirstBodyguard()
+    {
+        return bodyguards.get(0);
+    }
+
     public int getBodyguardIndex(EntityBodyguard bodyguard) throws BodyguardNotFoundException
     {
         for (int i = 0; i < bodyguards.size(); i++) {

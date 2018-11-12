@@ -7,12 +7,17 @@ import java.util.List;
 import mineguard.Troop;
 import mineguard.Troop.BodyguardOverflowException;
 import mineguard.Troop.TroopInOtherDimensionException;
+import mineguard.entity.EntityBodyguard;
+import mineguard.entity.ai.EntityAIReform;
 import mineguard.settings.Behaviour;
 import mineguard.settings.Formation;
+import mineguard.util.EntityUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -155,6 +160,23 @@ public class CommandBodyguard extends CommandBase
             else if (args.length == 1 && args[0].equals("info")) {
                 System.out.println(troop);
             }
+
+            // Make bodyguard attack a player (for debugging purpose)
+            else if (args.length == 2 && args[0].equals("attack")) {
+                EntityBodyguard bg = troop.getFirstBodyguard();
+                if (bg != null) {
+                    // Disable relevant AI tasks
+                    for (EntityAITaskEntry task : bg.targetTasks.taskEntries)
+                        bg.targetTasks.removeTask(task.action);
+                    for (EntityAITaskEntry task : bg.tasks.taskEntries)
+                        if (task.action instanceof EntityAIReform)
+                            bg.tasks.removeTask(task.action);
+
+                    EntityPlayer target = EntityUtil.getPlayerFromName(args[1]);
+                    if (target != null)
+                        bg.setAttackTarget(target);
+                }
+            }
         }
 
         else {
@@ -187,7 +209,7 @@ public class CommandBodyguard extends CommandBase
                 }
                 return getListOfStringsMatchingLastWord(args, possibilities);
             }
-        } else if (args[0].equals("give")) {
+        } else if (args[0].equals("attack") || args[0].equals("give")) {
             if (args.length == 2)
                 return getListOfStringsMatchingLastWord(args,
                         Arrays.asList(FMLCommonHandler.instance().getMinecraftServerInstance().getOnlinePlayerNames()));
