@@ -523,9 +523,10 @@ public class EntityBodyguard extends EntityCreature
         if (this.canInteractWith(player)) {
             this.setContainerOpen(true);
             player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.BODYGUARD_PANEL.ordinal(), world, 0, 0, 0);
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public boolean isContainerOpen()
