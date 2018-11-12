@@ -8,15 +8,25 @@ import net.minecraft.util.EnumHand;
 
 public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackMelee
 {
+    private EntityBodyguard attacker;
     private final int attackInterval;
-    private final float defenseRatio;
+    private float defenseRatio;
 
     public EntityAIAttackMelee(EntityBodyguard bodyguard, double speedIn, boolean useLongMemory)
     {
         super(bodyguard, speedIn, useLongMemory);
+
+        attacker = bodyguard;
         attackInterval = (int) (1.0D
                 / bodyguard.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).getAttributeValue() * 20.0D);
         defenseRatio = ModConfig.BODYGUARD_DEFENSE_RATIO;
+    }
+
+    @Override
+    public void resetTask()
+    {
+        super.resetTask();
+        attacker.setShield(false);
     }
 
     @Override
@@ -43,7 +53,7 @@ public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackM
 
         // Target out of reach
         else {
-            ((EntityBodyguard) attacker).setShield(true);
+            attacker.setShield(true);
         }
     }
 }
