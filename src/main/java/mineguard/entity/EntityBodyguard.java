@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import mineguard.Mineguard;
 import mineguard.Troop;
 import mineguard.client.gui.troop.GuiHandler;
+import mineguard.entity.ai.EntityAIAttackMelee;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfig;
@@ -20,13 +21,13 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemFood;
@@ -536,6 +537,24 @@ public class EntityBodyguard extends EntityCreature
 
             receivingTroop.addBodyguard(this);
         }
+    }
+
+    public void setShield(boolean enable)
+    {
+        ItemStack offHand = this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+        if (offHand.getItem().getItemUseAction(offHand) != EnumAction.BLOCK)
+            return;
+
+        if (enable)
+            this.setActiveHand(EnumHand.OFF_HAND);
+        else if (this.getActiveHand() == EnumHand.OFF_HAND)
+            this.stopActiveHand();
+    }
+
+    public boolean isShieldActive()
+    {
+        ItemStack offHand = this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
+        return offHand.getItem().getItemUseAction(this.activeItemStack) == EnumAction.BLOCK;
     }
 
     @Override
