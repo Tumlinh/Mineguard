@@ -25,6 +25,7 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.EnumAction;
@@ -352,6 +353,15 @@ public class EntityBodyguard extends EntityCreature
         }
 
         return flag;
+    }
+
+    @Override
+    protected void playHurtSound(DamageSource source)
+    {
+        if (this.canBlockDamageSource(source))
+            this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0F, 0.8F + world.rand.nextFloat() * 0.4F);
+        else
+            super.playHurtSound(source);
     }
 
     @Override
