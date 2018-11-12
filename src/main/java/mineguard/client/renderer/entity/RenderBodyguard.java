@@ -14,8 +14,10 @@ import net.minecraft.client.renderer.entity.layers.LayerArrow;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
@@ -42,6 +44,58 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
     protected ResourceLocation getEntityTexture(EntityBodyguard bodyguard)
     {
         return BODYGUARD_TEXTURE;
+    }
+
+    @Override
+    public ModelBiped getMainModel()
+    {
+        return (ModelBiped) super.getMainModel();
+    }
+
+    @Override
+    public void doRender(EntityBodyguard entity, double x, double y, double z, float entityYaw, float partialTicks)
+    {
+        ModelBiped modelBodyguard = this.getMainModel();
+        ItemStack itemStackMainHand = entity.getHeldItemMainhand();
+        ItemStack itemStackOffHand = entity.getHeldItemOffhand();
+        modelBodyguard.setVisible(true);
+        modelBodyguard.isSneak = entity.isSneaking();
+        ModelBiped.ArmPose armPose1 = ModelBiped.ArmPose.EMPTY;
+        ModelBiped.ArmPose armPose2 = ModelBiped.ArmPose.EMPTY;
+
+        if (!itemStackMainHand.isEmpty()) {
+            armPose1 = ModelBiped.ArmPose.ITEM;
+
+            if (entity.getItemInUseCount() > 0) {
+                EnumAction enumaction = itemStackMainHand.getItemUseAction();
+                if (enumaction == EnumAction.BLOCK)
+                    armPose1 = ModelBiped.ArmPose.BLOCK;
+                else if (enumaction == EnumAction.BOW)
+                    armPose1 = ModelBiped.ArmPose.BOW_AND_ARROW;
+            }
+        }
+
+        if (!itemStackOffHand.isEmpty()) {
+            armPose2 = ModelBiped.ArmPose.ITEM;
+
+            if (entity.getItemInUseCount() > 0) {
+                EnumAction enumaction1 = itemStackOffHand.getItemUseAction();
+                if (enumaction1 == EnumAction.BLOCK)
+                    armPose2 = ModelBiped.ArmPose.BLOCK;
+                else if (enumaction1 == EnumAction.BOW)
+                    armPose2 = ModelBiped.ArmPose.BOW_AND_ARROW;
+            }
+        }
+
+        if (entity.getPrimaryHand() == EnumHandSide.RIGHT) {
+            modelBodyguard.rightArmPose = armPose1;
+            modelBodyguard.leftArmPose = armPose2;
+        } else {
+            modelBodyguard.rightArmPose = armPose2;
+            modelBodyguard.leftArmPose = armPose1;
+        }
+
+        super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 
     @Override
