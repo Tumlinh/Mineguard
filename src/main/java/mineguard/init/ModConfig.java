@@ -17,6 +17,7 @@ public class ModConfig
     public static float BODYGUARD_SPEED_TARGET = 1.4F;
     public static float BODYGUARD_FOLLOW_RANGE = 32;
     public static int BODYGUARD_REGENERATION_TIME = 1200;
+    public static float BODYGUARD_DEFENSE_RATIO = 0.5F;
 
     public ModConfig(File configFile)
     {
@@ -47,5 +48,7 @@ public class ModConfig
                 Float.MAX_VALUE, "");
         BODYGUARD_REGENERATION_TIME = config.getInt("BodyguardRegenerationTime", "bodyguard",
                 BODYGUARD_REGENERATION_TIME, 0, Integer.MAX_VALUE, "");
+        BODYGUARD_DEFENSE_RATIO = config.getFloat("BodyguardDefenseRatio", "bodyguard", BODYGUARD_DEFENSE_RATIO, 0,
+                Float.MAX_VALUE, "");
     }
 }
