@@ -558,14 +558,24 @@ public class EntityBodyguard extends EntityCreature
 
         if (enable)
             this.setActiveHand(EnumHand.OFF_HAND);
-        else if (this.getActiveHand() == EnumHand.OFF_HAND)
-            this.stopActiveHand();
+        else
+            this.resetActiveHand();
     }
 
     public boolean isShieldActive()
     {
-        ItemStack offHand = this.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND);
-        return offHand.getItem().getItemUseAction(this.activeItemStack) == EnumAction.BLOCK;
+        return isActiveItemStackBlocking();
+    }
+
+    @Override
+    public boolean isActiveItemStackBlocking()
+    {
+        // Override shield cooldown of 5 ticks
+        if (this.isHandActive() && !this.activeItemStack.isEmpty()) {
+            Item item = this.activeItemStack.getItem();
+            return item.getItemUseAction(this.activeItemStack) == EnumAction.BLOCK;
+        }
+        return false;
     }
 
     @Override

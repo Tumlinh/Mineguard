@@ -9,7 +9,7 @@ import net.minecraft.util.EnumHand;
 public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackMelee
 {
     private EntityBodyguard attacker;
-    private final int attackInterval;
+    private int attackInterval;
     private float defenseRatio;
 
     public EntityAIAttackMelee(EntityBodyguard bodyguard, double speedIn, boolean useLongMemory)
@@ -23,13 +23,6 @@ public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackM
     }
 
     @Override
-    public void resetTask()
-    {
-        super.resetTask();
-        attacker.setShield(false);
-    }
-
-    @Override
     protected void checkAndPerformAttack(EntityLivingBase target, double targetDistance)
     {
         // Bodyguard can attack XOR defend using shield
@@ -38,15 +31,17 @@ public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackM
         double reach = this.getAttackReachSqr(target);
         // Target in reach
         if (targetDistance <= reach) {
-            if (attackTick <= attackInterval && attackTick >= attackInterval * (1.0F - defenseRatio)) {
-                ((EntityBodyguard) attacker).setShield(true);
-            } else {
+            if (attackTick <= attackInterval && attackTick >= attackInterval * defenseRatio) {
                 ((EntityBodyguard) attacker).setShield(false);
+            } else {
+                ((EntityBodyguard) attacker).setShield(true);
 
                 if (this.attackTick <= 0) {
                     attackTick = attackInterval;
                     attacker.swingArm(EnumHand.MAIN_HAND);
                     attacker.attackEntityAsMob(target);
+
+                    attacker.setShield(false);
                 }
             }
         }
