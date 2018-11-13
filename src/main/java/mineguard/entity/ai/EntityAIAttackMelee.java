@@ -19,6 +19,12 @@ public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackM
     }
 
     @Override
+    public void resetTask()
+    {
+        attacker.setShield(false);
+    }
+
+    @Override
     protected void checkAndPerformAttack(EntityLivingBase target, double targetDistance)
     {
         // Bodyguard can attack XOR defend using shield
