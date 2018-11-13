@@ -62,6 +62,8 @@ public class EntityBodyguard extends EntityCreature
     private IInventory inventory;
     private boolean containerOpen = false;
     private long timeSinceRegeneration;
+    public EntityAIReform reformTask;
+    public EntityAIBehaviour behaviourTask;
 
     // Called when spawning entities from NBT or hatching egg
     public EntityBodyguard(World worldIn)
@@ -181,13 +183,17 @@ public class EntityBodyguard extends EntityCreature
     @Override
     protected void initEntityAI()
     {
+        reformTask = new EntityAIReform(this, 30);
+        behaviourTask = new EntityAIBehaviour(this);
+
         this.tasks.taskEntries.clear();
         this.targetTasks.taskEntries.clear();
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_SPEED_TARGET, false));
-        this.tasks.addTask(3, new EntityAIReform(this, 30));
+        this.tasks.addTask(3, reformTask);
         this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
-        this.targetTasks.addTask(1, new EntityAIBehaviour(this));
+        this.targetTasks.addTask(1, behaviourTask);
+
     }
 
     @Override

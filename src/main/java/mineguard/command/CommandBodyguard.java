@@ -8,7 +8,6 @@ import mineguard.Troop;
 import mineguard.Troop.BodyguardOverflowException;
 import mineguard.Troop.TroopInOtherDimensionException;
 import mineguard.entity.EntityBodyguard;
-import mineguard.entity.ai.EntityAIReform;
 import mineguard.settings.Behaviour;
 import mineguard.settings.Formation;
 import mineguard.util.EntityUtil;
@@ -16,7 +15,6 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -166,11 +164,8 @@ public class CommandBodyguard extends CommandBase
                 EntityBodyguard bg = troop.getFirstBodyguard();
                 if (bg != null) {
                     // Disable relevant AI tasks
-                    for (EntityAITaskEntry task : bg.targetTasks.taskEntries)
-                        bg.targetTasks.removeTask(task.action);
-                    for (EntityAITaskEntry task : bg.tasks.taskEntries)
-                        if (task.action instanceof EntityAIReform)
-                            bg.tasks.removeTask(task.action);
+                    bg.tasks.removeTask(bg.reformTask);
+                    bg.targetTasks.removeTask(bg.behaviourTask);
 
                     EntityPlayer target = EntityUtil.getPlayerFromName(args[1]);
                     if (target != null)

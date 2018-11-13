@@ -120,7 +120,9 @@ public class Troop
 
     public EntityBodyguard getFirstBodyguard()
     {
-        return bodyguards.get(0);
+        if (!bodyguards.isEmpty())
+            return bodyguards.get(0);
+        return null;
     }
 
     public int getBodyguardIndex(EntityBodyguard bodyguard) throws BodyguardNotFoundException

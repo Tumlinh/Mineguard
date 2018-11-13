@@ -43,6 +43,9 @@ public class EntityAIBehaviour extends EntityAIBase
         if (bg.getAttackTarget() != null && !bg.getAttackTarget().isEntityAlive())
             bg.setAttackTarget((EntityLivingBase) null);
 
+        if (troop.getSettings().getBehaviour() != Behaviour.BERSERKER && !AIUtil.tasksContain(bg.tasks, bg.reformTask))
+            bg.tasks.addTask(3, bg.reformTask);
+
         // Aggressive mode: if no nearby hostile targets, attack any nearby target
         // sorted by priority
         if (troop.getSettings().getBehaviour() == Behaviour.AGGRESSIVE) {
@@ -64,6 +67,9 @@ public class EntityAIBehaviour extends EntityAIBase
 
         // Berserker mode: attack any nearby target except master
         else if (troop.getSettings().getBehaviour() == Behaviour.BERSERKER) {
+            // Stop reforming
+            bg.tasks.removeTask(bg.reformTask);
+
             List<Entity> nearbyTargets = this.getNearbyTargets();
             nearbyTargets.sort(new AIUtil.DistanceSorter((Entity) null, bg));
 

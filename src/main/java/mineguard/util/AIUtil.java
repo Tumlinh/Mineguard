@@ -1,13 +1,13 @@
 package mineguard.util;
 
 import java.util.Comparator;
-
 import javax.annotation.Nullable;
-
 import mineguard.Troop;
 import mineguard.entity.EntityBodyguard;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAITasks;
 
 public class AIUtil
 {
@@ -63,5 +63,15 @@ public class AIUtil
                 return d0 > d1 ? 1 : 0;
             }
         }
+    }
+
+    public static boolean tasksContain(EntityAITasks tasks, EntityAIBase task)
+    {
+        for (EntityAITasks.EntityAITaskEntry taskEntry : tasks.taskEntries) {
+            if (taskEntry.action == task)
+                return true;
+        }
+
+        return false;
     }
 }
