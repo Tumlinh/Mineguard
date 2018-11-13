@@ -10,7 +10,7 @@ public class ModConfig
     public static String SETTINGS_FILE = "settings.mg";
     public static int MAX_TROOP_SIZE = 64;
     public static float BODYGUARD_ATTACK_DAMAGE = 1.0F;
-    public static float BODYGUARD_ATTACK_SPEED = 1.0F;
+    public static float BODYGUARD_ATTACK_SPEED = 4.0F;
     public static float BODYGUARD_KNOCKBACK_RESISTANCE = 0.0F;
     public static float BODYGUARD_MAX_HEALTH = 20;
     public static float BODYGUARD_MOVEMENT_SPEED = 0.3F;

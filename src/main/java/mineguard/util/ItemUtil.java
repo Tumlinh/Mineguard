@@ -24,6 +24,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -77,7 +78,7 @@ public class ItemUtil
 
     public static WeaponClass getWeaponClass(Item item)
     {
-        if (item instanceof ItemSword || item instanceof ItemTool)
+        if (item instanceof ItemSword || item instanceof ItemTool || item instanceof ItemHoe)
             return WeaponClass.MELEE;
         else if (item instanceof ItemBow)
             return WeaponClass.RANGE;
