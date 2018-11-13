@@ -21,6 +21,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -72,6 +73,7 @@ public class EntityBodyguard extends EntityCreature
         timeSinceRegeneration = 0;
 
         ((PathNavigateGround) this.getNavigator()).setCanSwim(true);
+        ((PathNavigateGround) this.getNavigator()).setBreakDoors(true);
 
         // Force equipment drop on death without damaging it, except for the helmet
         Arrays.fill(inventoryHandsDropChances, 2.0F);
@@ -184,6 +186,7 @@ public class EntityBodyguard extends EntityCreature
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_SPEED_TARGET, false));
         this.tasks.addTask(3, new EntityAIReform(this, 30));
+        this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
         this.targetTasks.addTask(1, new EntityAIBehaviour(this));
     }
 
