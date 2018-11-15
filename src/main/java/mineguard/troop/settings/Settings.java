@@ -1,12 +1,12 @@
-package mineguard.settings;
+package mineguard.troop.settings;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import io.netty.buffer.ByteBuf;
 import mineguard.Mineguard;
-import mineguard.Troop;
 import mineguard.init.ModConfigServer;
+import mineguard.troop.Troop;
 import mineguard.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -168,7 +168,7 @@ public class Settings
 
     public void writeToNBT()
     {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+        if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
             return;
 
         // Build player settings

@@ -5,12 +5,12 @@ import java.util.IllegalFormatException;
 import java.util.Random;
 import javax.annotation.Nullable;
 import mineguard.Mineguard;
-import mineguard.Troop;
-import mineguard.client.gui.troop.GuiHandler;
+import mineguard.client.gui.GuiHandler;
 import mineguard.entity.ai.EntityAIAttackMelee;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
 import mineguard.init.ModConfigServer;
+import mineguard.troop.Troop;
 import mineguard.util.EntityUtil;
 import mineguard.util.ItemUtil;
 import mineguard.util.ItemUtil.WeaponClass;
@@ -50,11 +50,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
-public class EntityBodyguard extends EntityCreature
+public class EntityGuard extends EntityCreature
 {
-    public static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityBodyguard.class,
+    public static final DataParameter<Float> HEALTH = EntityDataManager.<Float>createKey(EntityGuard.class,
             DataSerializers.FLOAT);
-    public static final DataParameter<String> MASTER_NAME = EntityDataManager.<String>createKey(EntityBodyguard.class,
+    public static final DataParameter<String> MASTER_NAME = EntityDataManager.<String>createKey(EntityGuard.class,
             DataSerializers.STRING);
 
     private int id = NBTUtil.UNDEFINED;
@@ -66,7 +66,7 @@ public class EntityBodyguard extends EntityCreature
     public EntityAIBehaviour behaviourTask;
 
     // Called when spawning entities from NBT or hatching egg
-    public EntityBodyguard(World worldIn)
+    public EntityGuard(World worldIn)
     {
         super(worldIn);
         this.setSize(0.6F, 1.8F);
@@ -83,16 +83,16 @@ public class EntityBodyguard extends EntityCreature
         inventoryArmorDropChances[EntityEquipmentSlot.HEAD.getIndex()] = 0.0F;
     }
 
-    // Called when spawning new bodyguards as part of a troop
-    public EntityBodyguard(World worldIn, int id, Troop troop)
+    // Called when spawning new guards as part of a troop
+    public EntityGuard(World worldIn, int id, Troop troop)
     {
         this(worldIn);
         this.id = id;
         this.troop = troop;
         if (troop != null)
-            troop.addBodyguard(this);
+            troop.addGuard(this);
 
-        // Name bodyguard
+        // Name guard
         this.updateName();
 
         // Put on armor
@@ -139,8 +139,8 @@ public class EntityBodyguard extends EntityCreature
         try {
             this.setCustomNameTag(String.format(troop.getSettings().getNameFormat(), id));
         } catch (IllegalFormatException e) {
-            System.out.println(troop.getSettings().getNameFormat());
         }
+
         this.setAlwaysRenderNameTag(troop.getSettings().isDisplayName());
     }
 
@@ -189,7 +189,7 @@ public class EntityBodyguard extends EntityCreature
         this.tasks.taskEntries.clear();
         this.targetTasks.taskEntries.clear();
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfigServer.BODYGUARD_NAVIGATION_SPEED, false));
+        this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfigServer.GUARD_NAVIGATION_SPEED, false));
         this.tasks.addTask(3, reformTask);
         this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
         this.targetTasks.addTask(1, behaviourTask);
@@ -200,17 +200,14 @@ public class EntityBodyguard extends EntityCreature
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_DAMAGE,
-                ModConfigServer.BODYGUARD_ATTACK_DAMAGE);
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_SPEED,
-                ModConfigServer.BODYGUARD_ATTACK_SPEED);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_DAMAGE, ModConfigServer.GUARD_ATTACK_DAMAGE);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_SPEED, ModConfigServer.GUARD_ATTACK_SPEED);
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.KNOCKBACK_RESISTANCE,
-                ModConfigServer.BODYGUARD_KNOCKBACK_RESISTANCE);
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MAX_HEALTH, ModConfigServer.BODYGUARD_MAX_HEALTH);
+                ModConfigServer.GUARD_KNOCKBACK_RESISTANCE);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MAX_HEALTH, ModConfigServer.GUARD_MAX_HEALTH);
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MOVEMENT_SPEED,
-                ModConfigServer.BODYGUARD_MOVEMENT_SPEED);
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.FOLLOW_RANGE,
-                ModConfigServer.BODYGUARD_FOLLOW_RANGE);
+                ModConfigServer.GUARD_MOVEMENT_SPEED);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.FOLLOW_RANGE, ModConfigServer.GUARD_FOLLOW_RANGE);
     }
 
     protected void updateAITasks()
@@ -250,7 +247,7 @@ public class EntityBodyguard extends EntityCreature
             timeSinceRegeneration++;
 
             // Regenerate hitpoints
-            if (timeSinceRegeneration >= ModConfigServer.BODYGUARD_REGENERATION_TIME) {
+            if (timeSinceRegeneration >= ModConfigServer.GUARD_REGENERATION_TIME) {
                 this.heal(1.0F);
                 timeSinceRegeneration = 0;
             }
@@ -266,13 +263,13 @@ public class EntityBodyguard extends EntityCreature
 
         // Update troop
         if (!world.isRemote && troop != null)
-            troop.removeBodyguard(this);
+            troop.removeGuard(this);
     }
 
     @Override
     public Entity changeDimension(int dimensionIn)
     {
-        // Allowing a single bodyguard to change dimension through portals is
+        // Allowing a single guard to change dimension through portals is
         // undesirable
         return null;
     }
@@ -302,9 +299,9 @@ public class EntityBodyguard extends EntityCreature
         if (compound.hasKey("Id", new NBTTagInt(0).getId()))
             this.setId(compound.getInteger("Id"));
         if (compound.hasKey("Master", new NBTTagString().getId())) {
-            // Add bodyguard to troop
+            // Add guard to troop
             this.setTroop(Troop.getTroop(compound.getString("Master")));
-            troop.addBodyguard(this);
+            troop.addGuard(this);
         }
         if (compound.hasKey("LastRegenerationTime", new NBTTagLong(0).getId()))
             timeSinceRegeneration = compound.getLong("TimeSinceRegeneration");
@@ -351,6 +348,7 @@ public class EntityBodyguard extends EntityCreature
                 ItemStack mainHandItem = this.getHeldItemMainhand();
                 ItemStack activeItem = entityplayer.isHandActive() ? entityplayer.getActiveItemStack()
                         : ItemStack.EMPTY;
+
                 if (!mainHandItem.isEmpty() && !activeItem.isEmpty()
                         && mainHandItem.getItem().canDisableShield(mainHandItem, activeItem, entityplayer, this)
                         && activeItem.getItem().isShield(activeItem, entityplayer)) {
@@ -410,7 +408,7 @@ public class EntityBodyguard extends EntityCreature
                 targetSlot = EntityEquipmentSlot.OFFHAND;
             } else {
                 // One hand is not a weapon: keep it (can be used by the player to make
-                // bodyguards carry items)
+                // guards carry items)
                 if (!ItemUtil.isWeapon(mainHand.getItem())) {
                     // Try to drop the other hand
                     if ((itemOnFloorClass == offHandClass && offHandScore < itemOnFloorScore)
@@ -513,7 +511,7 @@ public class EntityBodyguard extends EntityCreature
         Item item = itemStack.getItem();
         if (!itemStack.isEmpty()) {
             if (dataManager.get(MASTER_NAME) == "" && item == Items.GOLD_INGOT) {
-                // Give bodyguard to player
+                // Give guard to player
                 if (!player.capabilities.isCreativeMode)
                     itemStack.shrink(1);
 
@@ -535,7 +533,7 @@ public class EntityBodyguard extends EntityCreature
         EntityUtil.setInteractionTarget(this);
         if (this.canInteractWith(player)) {
             this.setContainerOpen(true);
-            player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.BODYGUARD_PANEL.ordinal(), world, 0, 0, 0);
+            player.openGui(Mineguard.instance, GuiHandler.GUI_ENUM.GUARD_PANEL.ordinal(), world, 0, 0, 0);
             return true;
         }
 
@@ -557,9 +555,9 @@ public class EntityBodyguard extends EntityCreature
         if (!world.isRemote) {
             this.setTroop(receivingTroop);
             this.putOnColorizedHelmet();
-            // No need to change bg's master, this is done by writeToNBT()
+            // No need to change guard's master, this is done by writeToNBT()
 
-            receivingTroop.addBodyguard(this);
+            receivingTroop.addGuard(this);
         }
     }
 

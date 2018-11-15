@@ -1,10 +1,10 @@
 package mineguard.handler;
 
-import mineguard.Troop;
 import mineguard.client.ClientProxy;
 import mineguard.network.MessageTroopSettings;
 import mineguard.network.PacketHandler;
 import mineguard.network.MessageTroopSettings.Type;
+import mineguard.troop.Troop;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,7 +25,7 @@ public class EntityEvents
             Troop troop = Troop.getTroop(player.getName());
             troop.setMaster(player.getName());
 
-            if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+            if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
                 // Fetch settings from server
                 if (ClientProxy.getSettings() == null) {
                     MessageTroopSettings message = new MessageTroopSettings(Type.REQ, null);
@@ -52,7 +52,7 @@ public class EntityEvents
     public void onPlayerSave(PlayerEvent.SaveToFile event)
     {
         // Save settings
-        // TODO: ideally only save "center" and only if player has bodyguards
+        // TODO: ideally only save "center" and only if player has guards
         Troop.getTroop(event.getEntityPlayer().getName()).getSettings().writeToNBT();
     }
 }

@@ -1,7 +1,7 @@
 package mineguard.client.gui.troop.button;
 
 import mineguard.client.ClientProxy;
-import mineguard.settings.Behaviour;
+import mineguard.troop.settings.Behaviour;
 
 public class GuiButtonBehaviour extends GuiButtonImage
 {

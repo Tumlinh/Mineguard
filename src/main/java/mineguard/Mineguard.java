@@ -1,8 +1,8 @@
 package mineguard;
 
 import java.io.File;
-import mineguard.client.gui.troop.GuiHandler;
-import mineguard.command.CommandBodyguard;
+import mineguard.client.gui.GuiHandler;
+import mineguard.command.CommandMineguard;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -46,6 +46,6 @@ public class Mineguard
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event)
     {
-        event.registerServerCommand(new CommandBodyguard());
+        event.registerServerCommand(new CommandMineguard());
     }
 }

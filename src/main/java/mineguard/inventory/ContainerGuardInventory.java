@@ -1,7 +1,7 @@
 package mineguard.inventory;
 
 import javax.annotation.Nullable;
-import mineguard.entity.EntityBodyguard;
+import mineguard.entity.EntityGuard;
 import mineguard.handler.TextureRegister;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ContainerBodyguardInventory extends Container
+public class ContainerGuardInventory extends Container
 {
     public static final EntityEquipmentSlot[] EQUIPMENT_ARMOR_SLOTS = new EntityEquipmentSlot[] {
             EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET };
@@ -24,25 +24,25 @@ public class ContainerBodyguardInventory extends Container
     private static final String[] EMPTY_HAND_SLOT_NAMES = { TextureRegister.EMPTY_ARMOR_SLOT_MAINHAND_NAME,
             "minecraft:items/empty_armor_slot_shield" };
 
-    private EntityBodyguard bodyguard;
-    private IInventory bodyguardInventory;
+    private EntityGuard guard;
+    private IInventory guardInventory;
 
-    public ContainerBodyguardInventory(IInventory playerInventory, EntityBodyguard bodyguard)
+    public ContainerGuardInventory(IInventory playerInventory, EntityGuard guard)
     {
-        this.bodyguard = bodyguard;
+        this.guard = guard;
 
-        // Setup bodyguard inventory
-        bodyguardInventory = new InventoryBasic("BodyguardInventory", false, 6);
+        // Setup guard inventory
+        guardInventory = new InventoryBasic("GuardInventory", false, 6);
         int i = 0;
         for (EntityEquipmentSlot slot : EQUIPMENT_HAND_SLOTS)
-            bodyguardInventory.setInventorySlotContents(i++, bodyguard.getItemStackFromSlot(slot));
+            guardInventory.setInventorySlotContents(i++, guard.getItemStackFromSlot(slot));
         for (EntityEquipmentSlot slot : EQUIPMENT_ARMOR_SLOTS)
-            bodyguardInventory.setInventorySlotContents(i++, bodyguard.getItemStackFromSlot(slot));
+            guardInventory.setInventorySlotContents(i++, guard.getItemStackFromSlot(slot));
 
-        // Add slots for bodyguard equipment (hand)
+        // Add slots for guard equipment (hand)
         for (i = 0; i < 2; i++) {
             final EntityEquipmentSlot slot = EQUIPMENT_HAND_SLOTS[i];
-            this.addSlotToContainer(new Slot(bodyguardInventory, i, 77, 44 + i * 18)
+            this.addSlotToContainer(new Slot(guardInventory, i, 77, 44 + i * 18)
             {
                 @Nullable
                 @SideOnly(Side.CLIENT)
@@ -53,10 +53,10 @@ public class ContainerBodyguardInventory extends Container
             });
         }
 
-        // Add slots for bodyguard equipment (armor)
+        // Add slots for guard equipment (armor)
         for (int j = 0; j < 4; j++) {
             final EntityEquipmentSlot slot = EQUIPMENT_ARMOR_SLOTS[j];
-            this.addSlotToContainer(new Slot(bodyguardInventory, j + i, 8, 8 + j * 18)
+            this.addSlotToContainer(new Slot(guardInventory, j + i, 8, 8 + j * 18)
             {
                 public int getSlotStackLimit()
                 {
@@ -102,18 +102,18 @@ public class ContainerBodyguardInventory extends Container
     {
         super.detectAndSendChanges();
 
-        // Sync bodyguard equipment
+        // Sync guard equipment
         int i = 0;
         for (EntityEquipmentSlot slot : EQUIPMENT_HAND_SLOTS)
-            bodyguard.setItemStackToSlot(slot, bodyguardInventory.getStackInSlot(i++));
+            guard.setItemStackToSlot(slot, guardInventory.getStackInSlot(i++));
         for (EntityEquipmentSlot slot : EQUIPMENT_ARMOR_SLOTS)
-            bodyguard.setItemStackToSlot(slot, bodyguardInventory.getStackInSlot(i++));
+            guard.setItemStackToSlot(slot, guardInventory.getStackInSlot(i++));
     }
 
     @Override
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return bodyguard.canInteractWith(playerIn);
+        return guard.canInteractWith(playerIn);
     }
 
     @Override
@@ -127,13 +127,13 @@ public class ContainerBodyguardInventory extends Container
             itemstack = itemstack1.copy();
             EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
 
-            // Move equipment from bodyguard's inventory to player
+            // Move equipment from guard inventory to player
             if (index >= 0 && index <= 5) {
                 if (!this.mergeItemStack(itemstack1, 6, 42, false))
                     return ItemStack.EMPTY;
             }
 
-            // Move armor equipment from player inventory to bodyguard's
+            // Move armor equipment from player inventory to guard's
             else if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR
                     && this.isEmpty(5 - entityequipmentslot.getIndex())) {
                 int i = 5 - entityequipmentslot.getIndex();
@@ -141,13 +141,13 @@ public class ContainerBodyguardInventory extends Container
                     return ItemStack.EMPTY;
             }
 
-            // Move off-hand item (usually a shield) to bodyguard's inventory
+            // Move off-hand item (usually a shield) to guard's inventory
             else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && (this.isEmpty(0) || this.isEmpty(1))) {
                 if (!this.mergeItemStack(itemstack1, 0, 2, true))
                     return ItemStack.EMPTY;
             }
 
-            // Move main-hand item (can be anything) to bodyguard's inventory
+            // Move main-hand item (can be anything) to guard's inventory
             else if (entityequipmentslot == EntityEquipmentSlot.MAINHAND && (this.isEmpty(0) || this.isEmpty(1))) {
                 if (!this.mergeItemStack(itemstack1, 0, 2, false))
                     return ItemStack.EMPTY;
@@ -188,7 +188,7 @@ public class ContainerBodyguardInventory extends Container
     @Override
     public void onContainerClosed(EntityPlayer playerIn)
     {
-        bodyguard.setContainerOpen(false);
+        guard.setContainerOpen(false);
     }
 
     private boolean isEmpty(int slotIndex)

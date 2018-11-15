@@ -3,12 +3,12 @@ package mineguard.client;
 import java.io.File;
 import mineguard.CommonProxy;
 import mineguard.Mineguard;
-import mineguard.client.renderer.entity.RenderBodyguard;
-import mineguard.entity.EntityBodyguard;
+import mineguard.client.renderer.entity.RenderGuard;
+import mineguard.entity.EntityGuard;
 import mineguard.handler.KeyboardEvents;
 import mineguard.handler.TextureRegister;
 import mineguard.init.ModConfigClient;
-import mineguard.settings.Settings;
+import mineguard.troop.settings.Settings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -38,8 +38,7 @@ public class ClientProxy extends CommonProxy
         MinecraftForge.EVENT_BUS.register(new KeyboardEvents());
 
         // Register renderers
-        RenderingRegistry.registerEntityRenderingHandler(EntityBodyguard.class,
-                RenderBodyguard.RenderBodyguardFactory.INSTANCE);
+        RenderingRegistry.registerEntityRenderingHandler(EntityGuard.class, RenderGuard.RenderGuardFactory.INSTANCE);
 
         // Register key bindings
         ClientRegistry.registerKeyBinding(TROOP_CONTROLLER_KEYBINDING);

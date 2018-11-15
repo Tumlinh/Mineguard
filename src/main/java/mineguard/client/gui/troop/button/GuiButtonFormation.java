@@ -1,7 +1,7 @@
 package mineguard.client.gui.troop.button;
 
 import mineguard.client.ClientProxy;
-import mineguard.settings.Formation;
+import mineguard.troop.settings.Formation;
 
 public class GuiButtonFormation extends GuiButtonImage
 {

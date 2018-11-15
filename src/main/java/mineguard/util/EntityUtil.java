@@ -3,8 +3,9 @@ package mineguard.util;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
-import mineguard.Troop;
-import mineguard.entity.EntityBodyguard;
+
+import mineguard.entity.EntityGuard;
+import mineguard.troop.Troop;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -22,7 +23,7 @@ public class EntityUtil
 {
     // Dirty inter-class communication
     // Forge does not seem to allow passing an entity to the GuiHandler
-    private static EntityBodyguard interactionTarget;
+    private static EntityGuard interactionTarget;
 
     public static void setEntityAttribute(EntityLivingBase entity, IAttribute attribute, double value)
     {
@@ -31,36 +32,35 @@ public class EntityUtil
         entity.getEntityAttribute(attribute).setBaseValue(value);
     }
 
-    public static EntityBodyguard findBodyguard(UUID Uuid)
+    public static EntityGuard findGuard(UUID Uuid)
     {
-        // XXX: Are we supposed to look into every server && world to find the
-        // bodyguards?
+        // XXX: Are we supposed to look into every server && world to find the guards?
         MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
         Entity entity = server.getEntityFromUuid(Uuid);
-        if (entity != null && entity instanceof EntityBodyguard)
-            return (EntityBodyguard) entity;
+        if (entity != null && entity instanceof EntityGuard)
+            return (EntityGuard) entity;
         return null;
     }
 
-    public static Entity summonBodyguard(Troop troop, int bgIndex, World world, BlockPos pos)
+    public static Entity summonGuard(Troop troop, int guardIndex, World world, BlockPos pos)
     {
-        Entity bodyguard = null;
-        Constructor<?> constructor = ReflectionHelper.findConstructor(EntityBodyguard.class, World.class, int.class,
+        Entity guard = null;
+        Constructor<?> constructor = ReflectionHelper.findConstructor(EntityGuard.class, World.class, int.class,
                 troop.getClass());
         try {
-            bodyguard = (Entity) constructor.newInstance(world, bgIndex, troop);
+            guard = (Entity) constructor.newInstance(world, guardIndex, troop);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
             e.printStackTrace();
         }
 
-        bodyguard.setLocationAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
-        if (bodyguard instanceof EntityLiving)
-            ((EntityLiving) bodyguard).onInitialSpawn(world.getDifficultyForLocation(new BlockPos(bodyguard)),
+        guard.setLocationAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
+        if (guard instanceof EntityLiving)
+            ((EntityLiving) guard).onInitialSpawn(world.getDifficultyForLocation(new BlockPos(guard)),
                     (IEntityLivingData) null);
-        world.spawnEntity(bodyguard);
+        world.spawnEntity(guard);
 
-        return bodyguard;
+        return guard;
     }
 
     public static EntityPlayer getPlayerFromName(String name)
@@ -80,12 +80,12 @@ public class EntityUtil
         return null;
     }
 
-    public static EntityBodyguard getInteractionTarget()
+    public static EntityGuard getInteractionTarget()
     {
         return interactionTarget;
     }
 
-    public static void setInteractionTarget(EntityBodyguard interactionTargetIn)
+    public static void setInteractionTarget(EntityGuard interactionTargetIn)
     {
         interactionTarget = interactionTargetIn;
     }

@@ -2,7 +2,7 @@ package mineguard.client.renderer.entity;
 
 import java.awt.Color;
 import mineguard.Mineguard;
-import mineguard.entity.EntityBodyguard;
+import mineguard.entity.EntityGuard;
 import mineguard.init.ModConfigClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.model.ModelBiped;
@@ -22,13 +22,13 @@ import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-public class RenderBodyguard extends RenderLiving<EntityBodyguard>
+public class RenderGuard extends RenderLiving<EntityGuard>
 {
-    private static final ResourceLocation BODYGUARD_TEXTURE = new ResourceLocation(Mineguard.MODID,
-            "textures/entity/bodyguard.png");
+    private static final ResourceLocation GUARD_TEXTURE = new ResourceLocation(Mineguard.MODID,
+            "textures/entity/guard.png");
     private static boolean isRenderingMiniature = false;
 
-    public RenderBodyguard(RenderManager renderManager)
+    public RenderGuard(RenderManager renderManager)
     {
         super(renderManager, new ModelBiped(0.0F, 0.0F, 64, 64), 0.5F);
         this.addLayer(new LayerBipedArmor(this));
@@ -42,9 +42,9 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityBodyguard bodyguard)
+    protected ResourceLocation getEntityTexture(EntityGuard guard)
     {
-        return BODYGUARD_TEXTURE;
+        return GUARD_TEXTURE;
     }
 
     @Override
@@ -54,13 +54,13 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
     }
 
     @Override
-    public void doRender(EntityBodyguard entity, double x, double y, double z, float entityYaw, float partialTicks)
+    public void doRender(EntityGuard entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        ModelBiped modelBodyguard = this.getMainModel();
+        ModelBiped modelGuard = this.getMainModel();
         ItemStack itemStackMainHand = entity.getHeldItemMainhand();
         ItemStack itemStackOffHand = entity.getHeldItemOffhand();
-        modelBodyguard.setVisible(true);
-        modelBodyguard.isSneak = entity.isSneaking();
+        modelGuard.setVisible(true);
+        modelGuard.isSneak = entity.isSneaking();
         ModelBiped.ArmPose armPose1 = ModelBiped.ArmPose.EMPTY;
         ModelBiped.ArmPose armPose2 = ModelBiped.ArmPose.EMPTY;
 
@@ -89,25 +89,25 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
         }
 
         if (entity.getPrimaryHand() == EnumHandSide.RIGHT) {
-            modelBodyguard.rightArmPose = armPose1;
-            modelBodyguard.leftArmPose = armPose2;
+            modelGuard.rightArmPose = armPose1;
+            modelGuard.leftArmPose = armPose2;
         } else {
-            modelBodyguard.rightArmPose = armPose2;
-            modelBodyguard.leftArmPose = armPose1;
+            modelGuard.rightArmPose = armPose2;
+            modelGuard.leftArmPose = armPose1;
         }
 
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 
     @Override
-    protected void preRenderCallback(EntityBodyguard entityIn, float partialTickTime)
+    protected void preRenderCallback(EntityGuard entityIn, float partialTickTime)
     {
         // Set the same render size than the player's (1.8 blocks high)
         GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
     }
 
     @Override
-    protected void renderLivingLabel(EntityBodyguard entityIn, String str, double x, double y, double z,
+    protected void renderLivingLabel(EntityGuard entityIn, String str, double x, double y, double z,
             int maxDistance)
     {
         double d0 = entityIn.getDistanceSq(this.renderManager.renderViewEntity);
@@ -128,7 +128,7 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
         }
     }
 
-    private void displayHealthBar(EntityBodyguard entityIn, String str, double x, double y, double z, int maxDistance)
+    private void displayHealthBar(EntityGuard entityIn, String str, double x, double y, double z, int maxDistance)
     {
         double d0 = entityIn.getDistanceSq(this.renderManager.renderViewEntity);
         if (d0 <= (double) (maxDistance * maxDistance)) {
@@ -140,7 +140,7 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
 
             int barLength = 40;
             int greenLength = Math
-                    .round(barLength * entityIn.getDataManager().get(EntityBodyguard.HEALTH) / entityIn.getMaxHealth());
+                    .round(barLength * entityIn.getDataManager().get(EntityGuard.HEALTH) / entityIn.getMaxHealth());
 
             // Get troop color from helmet (disgusting but avoids sync)
             int barColor = Color.GREEN.getRGB();
@@ -151,7 +151,7 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
             // Force color opacity
             barColor = (0xff << 24) + (barColor & 0xffffff);
 
-            if (entityIn.getDataManager().get(EntityBodyguard.MASTER_NAME) != "") {
+            if (entityIn.getDataManager().get(EntityGuard.MASTER_NAME) != "") {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(x, y + f, z);
                 GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -172,7 +172,7 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
 
     @Override
     // Gross hook but works best
-    public void renderName(EntityBodyguard entityIn, double x, double y, double z)
+    public void renderName(EntityGuard entityIn, double x, double y, double z)
     {
         if (!isRenderingMiniature) {
             if (this.canRenderName(entityIn))
@@ -184,25 +184,25 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
     }
 
     @Override
-    protected boolean canRenderName(EntityBodyguard entityIn)
+    protected boolean canRenderName(EntityGuard entityIn)
     {
         return ModConfigClient.DISPLAY_NAME && super.canRenderName(entityIn);
     }
 
-    private boolean canRenderHealthBar(EntityBodyguard entityIn)
+    private boolean canRenderHealthBar(EntityGuard entityIn)
     {
         boolean alwaysRender = ModConfigClient.DISPLAY_HEALTH_BAR;
         return alwaysRender || entityIn == this.renderManager.pointedEntity;
     }
 
-    public static class RenderBodyguardFactory implements IRenderFactory<EntityBodyguard>
+    public static class RenderGuardFactory implements IRenderFactory<EntityGuard>
     {
-        public static final RenderBodyguardFactory INSTANCE = new RenderBodyguardFactory();
+        public static final RenderGuardFactory INSTANCE = new RenderGuardFactory();
 
         @Override
-        public Render<? super EntityBodyguard> createRenderFor(RenderManager manager)
+        public Render<? super EntityGuard> createRenderFor(RenderManager manager)
         {
-            return new RenderBodyguard(manager);
+            return new RenderGuard(manager);
         }
     }
 }

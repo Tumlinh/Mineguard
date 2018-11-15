@@ -1,4 +1,4 @@
-package mineguard;
+package mineguard.troop;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import mineguard.entity.EntityBodyguard;
+import mineguard.entity.EntityGuard;
 import mineguard.init.ModConfigServer;
-import mineguard.settings.*;
+import mineguard.troop.settings.*;
 import mineguard.util.EntityUtil;
 import mineguard.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,25 +24,25 @@ public class Troop
     private String masterName;
     private Settings settings;
 
-    // For computing serial numbers (id) when spawning bodyguards
+    // For computing serial numbers (id) when spawning guards
     private int maxIndex = -1;
 
-    private List<EntityBodyguard> bodyguards = new ArrayList<EntityBodyguard>()
+    private List<EntityGuard> guards = new ArrayList<EntityGuard>()
     {
         private static final long serialVersionUID = 1L;
 
-        public boolean add(EntityBodyguard newBodyguard)
+        public boolean add(EntityGuard newGuard)
         {
             // Check UUID to avoid duplicates of the same entity (it happens when
             // loading/unloading worlds)
-            ListIterator<EntityBodyguard> bgIterator = this.listIterator();
-            while (bgIterator.hasNext()) {
-                if (bgIterator.next().getUniqueID().equals(newBodyguard.getUniqueID())) {
-                    bgIterator.set(newBodyguard);
+            ListIterator<EntityGuard> guardIterator = this.listIterator();
+            while (guardIterator.hasNext()) {
+                if (guardIterator.next().getUniqueID().equals(newGuard.getUniqueID())) {
+                    guardIterator.set(newGuard);
                     return true;
                 }
             }
-            bgIterator.add(newBodyguard);
+            guardIterator.add(newGuard);
             return true;
         }
     };
@@ -92,85 +92,84 @@ public class Troop
         return troops;
     }
 
-    public void addBodyguard(EntityBodyguard bg)
+    public void addGuard(EntityGuard guard)
     {
-        if (bg.getId() == NBTUtil.UNDEFINED)
-            bg.setId(++maxIndex);
-        else if (bg.getId() > maxIndex)
-            maxIndex = bg.getId();
+        if (guard.getId() == NBTUtil.UNDEFINED)
+            guard.setId(++maxIndex);
+        else if (guard.getId() > maxIndex)
+            maxIndex = guard.getId();
 
-        if (!bg.hasCustomName())
-            bg.updateName();
+        if (!guard.hasCustomName())
+            guard.updateName();
 
-        bodyguards.add(bg);
-        Collections.sort(bodyguards, new Comparator<EntityBodyguard>()
+        guards.add(guard);
+        Collections.sort(guards, new Comparator<EntityGuard>()
         {
             @Override
-            public int compare(EntityBodyguard bg1, EntityBodyguard bg2)
+            public int compare(EntityGuard guard1, EntityGuard guard2)
             {
-                return bg1.getId() < bg2.getId() ? -1 : bg1.getId() == bg2.getId() ? 0 : 1;
+                return guard1.getId() < guard2.getId() ? -1 : guard1.getId() == guard2.getId() ? 0 : 1;
             }
         });
     }
 
-    public int getBodyguardCount()
+    public int getGuardCount()
     {
-        return bodyguards.size();
+        return guards.size();
     }
 
-    public EntityBodyguard getFirstBodyguard()
+    public EntityGuard getFirstGuard()
     {
-        if (!bodyguards.isEmpty())
-            return bodyguards.get(0);
+        if (!guards.isEmpty())
+            return guards.get(0);
         return null;
     }
 
-    public int getBodyguardIndex(EntityBodyguard bodyguard) throws BodyguardNotFoundException
+    public int getGuardIndex(EntityGuard guard) throws GuardNotFoundException
     {
-        for (int i = 0; i < bodyguards.size(); i++) {
-            if (bodyguards.get(i) == bodyguard)
+        for (int i = 0; i < guards.size(); i++) {
+            if (guards.get(i) == guard)
                 return i;
         }
-        throw new BodyguardNotFoundException();
+        throw new GuardNotFoundException();
     }
 
-    public void summonBodyguards(World world, BlockPos pos, int count)
-            throws TroopInOtherDimensionException, BodyguardOverflowException
+    public void summonGuards(World world, BlockPos pos, int count)
+            throws TroopInOtherDimensionException, GuardOverflowException
     {
-        if (bodyguards.size() + count > ModConfigServer.MAX_TROOP_SIZE)
-            throw new BodyguardOverflowException();
+        if (guards.size() + count > ModConfigServer.MAX_TROOP_SIZE)
+            throw new GuardOverflowException();
 
         // Check dimension
-        if (bodyguards.isEmpty())
+        if (guards.isEmpty())
             settings.setDimension(world.provider.getDimension());
         else if (world.provider.getDimension() != settings.getDimension())
             throw new TroopInOtherDimensionException();
 
         int maxIndexOld = maxIndex;
         for (int i = maxIndexOld + 1; i <= maxIndexOld + count; i++)
-            EntityUtil.summonBodyguard(this, i, world, pos);
+            EntityUtil.summonGuard(this, i, world, pos);
     }
 
-    public void removeBodyguard(EntityBodyguard bodyguard)
+    public void removeGuard(EntityGuard guard)
     {
-        Iterator<EntityBodyguard> bgIterator = bodyguards.iterator();
-        while (bgIterator.hasNext()) {
-            if (bgIterator.next().equals(bodyguard))
-                bgIterator.remove();
+        Iterator<EntityGuard> guardIterator = guards.iterator();
+        while (guardIterator.hasNext()) {
+            if (guardIterator.next().equals(guard))
+                guardIterator.remove();
         }
     }
 
-    public void removeBodyguards()
+    public void removeGuards()
     {
-        // TODO: rm troop completely?
-        for (EntityBodyguard bodyguard : bodyguards)
-            bodyguard.setDead();
-        this.resetBodyguardList();
+        for (EntityGuard guard : guards)
+            guard.setDead();
+        this.resetGuardList();
     }
 
-    public void resetBodyguardList()
+    public void resetGuardList()
     {
-        bodyguards.clear();
+        guards.clear();
         maxIndex = -1;
     }
 
@@ -187,7 +186,7 @@ public class Troop
         if (formation == Formation.SQUARE) {
             // Size is half of side
             perimeter = 8 * size;
-            linearPos = perimeter * index / bodyguards.size();
+            linearPos = perimeter * index / guards.size();
 
             // Compatible with the circle formation
             if (linearPos < size) {
@@ -208,7 +207,7 @@ public class Troop
             }
         } else if (formation == Formation.CIRCLE) {
             // Size is radius
-            linearPos = 2.0 * Math.PI * index / bodyguards.size();
+            linearPos = 2.0 * Math.PI * index / guards.size();
 
             posX = center.x + size * Math.cos(linearPos);
             posZ = center.z - size * Math.sin(linearPos);
@@ -218,55 +217,55 @@ public class Troop
 
     public void updateNames()
     {
-        for (EntityBodyguard bodyguard : bodyguards)
-            bodyguard.updateName();
+        for (EntityGuard guard : guards)
+            guard.updateName();
     }
 
     public void updateHelmets()
     {
-        for (EntityBodyguard bodyguard : bodyguards)
-            bodyguard.putOnColorizedHelmet();
+        for (EntityGuard guard : guards)
+            guard.putOnColorizedHelmet();
     }
 
-    public void give(String name) throws BodyguardOverflowException
+    public void give(String name) throws GuardOverflowException
     {
         if (!masterName.equals(name)) {
             Troop receivingTroop = Troop.getTroop(name);
 
-            if (receivingTroop.bodyguards.size() + this.bodyguards.size() > ModConfigServer.MAX_TROOP_SIZE)
-                throw new BodyguardOverflowException();
+            if (receivingTroop.guards.size() + this.guards.size() > ModConfigServer.MAX_TROOP_SIZE)
+                throw new GuardOverflowException();
 
-            // Get bodyguards
-            for (EntityBodyguard bodyguard : bodyguards)
-                bodyguard.give(receivingTroop);
+            // Get guards
+            for (EntityGuard guard : guards)
+                guard.give(receivingTroop);
 
-            this.resetBodyguardList();
+            this.resetGuardList();
         }
     }
 
     @Override
     public String toString()
     {
-        String ret = "master=" + masterName + " bg_count=" + bodyguards.size() + "\n" + settings;
+        String ret = "master=" + masterName + " g_count=" + guards.size() + "\n" + settings;
         // XXX: debugging
         ret += "\n";
-        for (EntityBodyguard bg : bodyguards)
-            ret += bg.toString() + "\n";
+        for (EntityGuard guard : guards)
+            ret += guard.toString() + "\n";
         return ret;
     }
 
-    public class BodyguardOverflowException extends Exception
+    public class GuardOverflowException extends Exception
     {
         private static final long serialVersionUID = 1L;
 
         @Override
         public String getMessage()
         {
-            return "Failed adding bodyguards: Limit reached";
+            return "Failed adding guards: Limit reached";
         }
     }
 
-    public class BodyguardNotFoundException extends Exception
+    public class GuardNotFoundException extends Exception
     {
         private static final long serialVersionUID = 1L;
 
@@ -279,7 +278,7 @@ public class Troop
         @Override
         public String getMessage()
         {
-            return "Failed summoning bodyguards: Troop is in another dimension";
+            return "Failed summoning guards: Troop is in another dimension";
         }
     }
 }

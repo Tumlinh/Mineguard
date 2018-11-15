@@ -1,10 +1,10 @@
 package mineguard.client.gui.inventory;
 
 import java.util.List;
-import mineguard.client.renderer.entity.RenderBodyguard;
-import mineguard.entity.EntityBodyguard;
-import mineguard.handler.TextureRegister;
-import mineguard.inventory.ContainerBodyguardInventory;
+import mineguard.Mineguard;
+import mineguard.client.renderer.entity.RenderGuard;
+import mineguard.entity.EntityGuard;
+import mineguard.inventory.ContainerGuardInventory;
 import mineguard.util.ItemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -21,23 +21,25 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiScreenBodyguardPanel extends GuiContainer
+public class GuiScreenGuardPanel extends GuiContainer
 {
-    private EntityBodyguard bodyguard;
+    private static final String GUARD_INVENTORY = Mineguard.MODID + ":textures/gui/container/guard_inventory.png";
+
+    private EntityGuard guard;
     private float oldMouseX;
     private float oldMouseY;
 
-    public GuiScreenBodyguardPanel(IInventory playerInventory, EntityBodyguard bodyguard)
+    public GuiScreenGuardPanel(IInventory playerInventory, EntityGuard guard)
     {
-        super(new ContainerBodyguardInventory(playerInventory, bodyguard));
-        this.bodyguard = bodyguard;
+        super(new ContainerGuardInventory(playerInventory, guard));
+        this.guard = guard;
         this.allowUserInput = false;
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        String nameTag = bodyguard.getCustomNameTag();
+        String nameTag = guard.getCustomNameTag();
         int minX = 80;
         int maxX = 170;
         int maxLength = maxX - minX;
@@ -60,14 +62,14 @@ public class GuiScreenBodyguardPanel extends GuiContainer
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.getTextureManager().bindTexture(new ResourceLocation(TextureRegister.BODYGUARD_INVENTORY));
+        mc.getTextureManager().bindTexture(new ResourceLocation(GUARD_INVENTORY));
         int marginHorizontal = (width - xSize) / 2;
         int marginVertical = (height - ySize) / 2;
         this.drawTexturedModalRect(marginHorizontal, marginVertical, 0, 0, xSize, ySize);
 
         // Render entity miniature, free of name tag and health bar
         renderMiniature(guiLeft + 51, guiTop + 75, 30, (float) (guiLeft + 51) - oldMouseX,
-                (float) (guiTop + 75 - 50) - oldMouseY, bodyguard);
+                (float) (guiTop + 75 - 50) - oldMouseY, guard);
     }
 
     @Override
@@ -84,7 +86,7 @@ public class GuiScreenBodyguardPanel extends GuiContainer
     @Override
     public List<String> getItemToolTip(ItemStack itemStack)
     {
-        List<String> list = ItemUtil.getTooltip(itemStack, bodyguard, this.mc.player,
+        List<String> list = ItemUtil.getTooltip(itemStack, guard, this.mc.player,
                 this.mc.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED
                         : ITooltipFlag.TooltipFlags.NORMAL);
 
@@ -98,8 +100,7 @@ public class GuiScreenBodyguardPanel extends GuiContainer
         return list;
     }
 
-    private static void renderMiniature(int posX, int posY, int scale, float mouseX, float mouseY,
-            EntityBodyguard entity)
+    private static void renderMiniature(int posX, int posY, int scale, float mouseX, float mouseY, EntityGuard entity)
     {
         GlStateManager.enableColorMaterial();
         GlStateManager.pushMatrix();
@@ -124,9 +125,9 @@ public class GuiScreenBodyguardPanel extends GuiContainer
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         renderManager.setPlayerViewY(180.0F);
         renderManager.setRenderShadow(false);
-        RenderBodyguard.setRenderingMiniature(true);
+        RenderGuard.setRenderingMiniature(true);
         renderManager.renderEntity(entity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
-        RenderBodyguard.setRenderingMiniature(false);
+        RenderGuard.setRenderingMiniature(false);
         renderManager.setRenderShadow(true);
         entity.renderYawOffset = yawOffset;
         entity.rotationYaw = yaw;

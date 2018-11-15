@@ -1,6 +1,6 @@
 package mineguard.entity.ai;
 
-import mineguard.entity.EntityBodyguard;
+import mineguard.entity.EntityGuard;
 import mineguard.init.ModConfigServer;
 import mineguard.util.ItemUtil;
 import net.minecraft.entity.EntityLivingBase;
@@ -8,14 +8,14 @@ import net.minecraft.util.EnumHand;
 
 public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackMelee
 {
-    private EntityBodyguard attacker;
+    private EntityGuard attacker;
     private float defenseRatio;
 
-    public EntityAIAttackMelee(EntityBodyguard bodyguard, double speedIn, boolean useLongMemory)
+    public EntityAIAttackMelee(EntityGuard guard, double speedIn, boolean useLongMemory)
     {
-        super(bodyguard, speedIn, useLongMemory);
-        attacker = bodyguard;
-        defenseRatio = ModConfigServer.BODYGUARD_DEFENSE_RATIO;
+        super(guard, speedIn, useLongMemory);
+        attacker = guard;
+        defenseRatio = ModConfigServer.GUARD_DEFENSE_RATIO;
     }
 
     @Override
@@ -27,17 +27,17 @@ public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackM
     @Override
     protected void checkAndPerformAttack(EntityLivingBase target, double targetDistance)
     {
-        // Bodyguard can attack XOR defend using shield
-        // However there is a short time when bodyguard cannot attack nor defend
+        // Guard can attack XOR defend using shield
+        // However there is a short time when guard cannot attack nor defend
 
         int attackInterval = (int) (1.0F / ItemUtil.getAttackSpeed(attacker, attacker.getHeldItemMainhand()) * 20.0F);
         double reach = this.getAttackReachSqr(target);
         // Target in reach
         if (targetDistance <= reach) {
             if (attackTick <= attackInterval && attackTick >= attackInterval * defenseRatio) {
-                ((EntityBodyguard) attacker).setShield(false);
+                ((EntityGuard) attacker).setShield(false);
             } else {
-                ((EntityBodyguard) attacker).setShield(true);
+                ((EntityGuard) attacker).setShield(true);
 
                 if (this.attackTick <= 0) {
                     attackTick = attackInterval;

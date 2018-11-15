@@ -1,4 +1,4 @@
-package mineguard.settings;
+package mineguard.troop.settings;
 
 import java.util.ArrayList;
 import java.util.List;

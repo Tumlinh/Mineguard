@@ -2,8 +2,9 @@ package mineguard.util;
 
 import java.util.Comparator;
 import javax.annotation.Nullable;
-import mineguard.Troop;
-import mineguard.entity.EntityBodyguard;
+
+import mineguard.entity.EntityGuard;
+import mineguard.troop.Troop;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -14,8 +15,8 @@ public class AIUtil
     // True if entity belongs to the same troop
     public static boolean isFellow(Troop troop, Entity entity)
     {
-        if (entity instanceof EntityBodyguard)
-            return ((EntityBodyguard) entity).getTroop() == troop;
+        if (entity instanceof EntityGuard)
+            return ((EntityGuard) entity).getTroop() == troop;
         return false;
     }
 
@@ -34,23 +35,23 @@ public class AIUtil
     public static class DistanceSorter implements Comparator<Entity>
     {
         private final Entity master;
-        private final Entity bodyguard;
+        private final Entity guard;
         private final double weight = 0.2;
 
-        public DistanceSorter(@Nullable Entity master, Entity bodyguard)
+        public DistanceSorter(@Nullable Entity master, Entity guard)
         {
             this.master = master;
-            this.bodyguard = bodyguard;
+            this.guard = guard;
         }
 
         public int compare(Entity entity1, Entity entity2)
         {
             /*
              * Heuristics: priority depends on two elements: the distance between the entity
-             * and the master, and the distance between the entity and the bodyguard
+             * and the master, and the distance between the entity and the guard
              */
-            double d0 = bodyguard.getDistanceSq(entity1) * weight;
-            double d1 = bodyguard.getDistanceSq(entity2) * weight;
+            double d0 = guard.getDistanceSq(entity1) * weight;
+            double d1 = guard.getDistanceSq(entity2) * weight;
 
             if (master != null) {
                 d0 += master.getDistanceSq(entity1);

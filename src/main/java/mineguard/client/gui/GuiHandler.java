@@ -1,8 +1,8 @@
 package mineguard.client.gui;
 
-import mineguard.client.gui.inventory.GuiScreenBodyguardPanel;
-import mineguard.entity.EntityBodyguard;
-import mineguard.inventory.ContainerBodyguardInventory;
+import mineguard.client.gui.inventory.GuiScreenGuardPanel;
+import mineguard.entity.EntityGuard;
+import mineguard.inventory.ContainerGuardInventory;
 import mineguard.util.EntityUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
@@ -12,16 +12,16 @@ public class GuiHandler implements IGuiHandler
 {
     public enum GUI_ENUM
     {
-        BODYGUARD_PANEL
+        GUARD_PANEL
     }
 
     @Override
     public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        if (ID == GUI_ENUM.BODYGUARD_PANEL.ordinal()) {
-            EntityBodyguard bodyguard = EntityUtil.getInteractionTarget();
-            if (bodyguard != null)
-                return new ContainerBodyguardInventory(player.inventory, bodyguard);
+        if (ID == GUI_ENUM.GUARD_PANEL.ordinal()) {
+            EntityGuard guard = EntityUtil.getInteractionTarget();
+            if (guard != null)
+                return new ContainerGuardInventory(player.inventory, guard);
         }
 
         return null;
@@ -30,10 +30,10 @@ public class GuiHandler implements IGuiHandler
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
     {
-        if (ID == GUI_ENUM.BODYGUARD_PANEL.ordinal()) {
-            EntityBodyguard bodyguard = EntityUtil.getInteractionTarget();
-            if (bodyguard != null)
-                return new GuiScreenBodyguardPanel(player.inventory, bodyguard);
+        if (ID == GUI_ENUM.GUARD_PANEL.ordinal()) {
+            EntityGuard guard = EntityUtil.getInteractionTarget();
+            if (guard != null)
+                return new GuiScreenGuardPanel(player.inventory, guard);
         }
 
         return null;

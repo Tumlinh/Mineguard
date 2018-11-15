@@ -1,7 +1,7 @@
 package mineguard.network;
 
-import mineguard.Troop;
 import mineguard.network.MessageTroopSettings.Type;
+import mineguard.troop.Troop;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;

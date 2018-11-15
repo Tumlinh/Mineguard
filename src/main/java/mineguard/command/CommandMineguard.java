@@ -4,12 +4,12 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import mineguard.Troop;
-import mineguard.Troop.BodyguardOverflowException;
-import mineguard.Troop.TroopInOtherDimensionException;
-import mineguard.entity.EntityBodyguard;
-import mineguard.settings.Behaviour;
-import mineguard.settings.Formation;
+import mineguard.entity.EntityGuard;
+import mineguard.troop.Troop;
+import mineguard.troop.Troop.GuardOverflowException;
+import mineguard.troop.Troop.TroopInOtherDimensionException;
+import mineguard.troop.settings.Behaviour;
+import mineguard.troop.settings.Formation;
 import mineguard.util.EntityUtil;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -25,12 +25,12 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-public class CommandBodyguard extends CommandBase
+public class CommandMineguard extends CommandBase
 {
     @Override
     public String getName()
     {
-        return "bg";
+        return "mineguard";
     }
 
     @Override
@@ -42,7 +42,8 @@ public class CommandBodyguard extends CommandBase
     @Override
     public String getUsage(ICommandSender sender)
     {
-        return "\n/bg mk <number>\n" + "/bg set <behaviour|follow|formation|size> [value]\n" + "/bg <info|rm|rs>";
+        return "\n/mineguard mk <number>\n" + "/mineguard set <behaviour|follow|formation|size> [value]\n"
+                + "/mineguard <info|rm|rs>";
     }
 
     @Override
@@ -52,29 +53,29 @@ public class CommandBodyguard extends CommandBase
             EntityPlayerMP player = getCommandSenderAsPlayer(sender);
             Troop troop = Troop.getTroop(player.getName());
 
-            // Add bodyguard(s)
+            // Add guard(s)
             if (args.length == 2 && args[0].equals("mk")) {
-                int bgCount = Integer.parseInt(args[1]);
+                int guardCount = Integer.parseInt(args[1]);
                 World world = player.world;
                 try {
-                    troop.summonBodyguards(world, player.getPosition(), bgCount);
+                    troop.summonGuards(world, player.getPosition(), guardCount);
                 } catch (TroopInOtherDimensionException e) {
                     sendMessage(sender, e.getMessage(), TextFormatting.RED);
-                } catch (BodyguardOverflowException e) {
+                } catch (GuardOverflowException e) {
                     sendMessage(sender, e.getMessage(), TextFormatting.RED);
                 }
             }
 
-            // Remove bodyguards
+            // Remove guards
             else if (args.length == 1 && args[0].equals("rm")) {
-                troop.removeBodyguards();
+                troop.removeGuards();
             }
 
-            // Give bodyguards
+            // Give guards
             else if (args.length == 2 && args[0].equals("give")) {
                 try {
                     troop.give(args[1]);
-                } catch (BodyguardOverflowException e) {
+                } catch (GuardOverflowException e) {
                     sendMessage(sender, e.getMessage(), TextFormatting.RED);
                 }
             }
@@ -148,28 +149,22 @@ public class CommandBodyguard extends CommandBase
                 }
             }
 
-            // Reset bg's behaviour, whitelist, blacklist, formation, etc.
-            // TODO: implement or remove it
-            else if (args.length == 1 && args[0].equals("rs")) {
-
-            }
-
             // Get debug information
             else if (args.length == 1 && args[0].equals("info")) {
                 System.out.println(troop);
             }
 
-            // Make bodyguard attack a player (for debugging purpose)
+            // Make guard attack a player (for debugging purpose)
             else if (args.length == 2 && args[0].equals("attack")) {
-                EntityBodyguard bg = troop.getFirstBodyguard();
-                if (bg != null) {
+                EntityGuard guard = troop.getFirstGuard();
+                if (guard != null) {
                     // Disable relevant AI tasks
-                    bg.tasks.removeTask(bg.reformTask);
-                    bg.targetTasks.removeTask(bg.behaviourTask);
+                    guard.tasks.removeTask(guard.reformTask);
+                    guard.targetTasks.removeTask(guard.behaviourTask);
 
                     EntityPlayer target = EntityUtil.getPlayerFromName(args[1]);
                     if (target != null)
-                        bg.setAttackTarget(target);
+                        guard.setAttackTarget(target);
                 }
             }
         }

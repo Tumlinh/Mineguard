@@ -3,7 +3,7 @@ package mineguard.network;
 import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
-import mineguard.settings.Settings;
+import mineguard.troop.settings.Settings;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 // TODO: Mask to select relevant settings
