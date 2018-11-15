@@ -3,7 +3,7 @@ package mineguard;
 import java.io.File;
 import mineguard.entity.EntityBodyguard;
 import mineguard.handler.EntityEvents;
-import mineguard.init.ModConfig;
+import mineguard.init.ModConfigServer;
 import mineguard.network.PacketHandler;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
@@ -18,8 +18,8 @@ public class CommonProxy
     public void preInit(FMLPreInitializationEvent event)
     {
         // Load configuration
-        File configFile = new File(event.getModConfigurationDirectory(), "mineguard.cfg");
-        new ModConfig(configFile);
+        File configFile = new File(Mineguard.instance.configDirectory, "gameplay.cfg");
+        new ModConfigServer(configFile);
 
         // Register entities
         EntityRegistry.registerModEntity(new ResourceLocation(Mineguard.MODID, "bodyguard"), EntityBodyguard.class,

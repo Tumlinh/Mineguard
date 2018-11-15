@@ -3,6 +3,7 @@ package mineguard.client.renderer.entity;
 import java.awt.Color;
 import mineguard.Mineguard;
 import mineguard.entity.EntityBodyguard;
+import mineguard.init.ModConfigClient;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -182,9 +183,15 @@ public class RenderBodyguard extends RenderLiving<EntityBodyguard>
         }
     }
 
+    @Override
+    protected boolean canRenderName(EntityBodyguard entityIn)
+    {
+        return ModConfigClient.DISPLAY_NAME && super.canRenderName(entityIn);
+    }
+
     private boolean canRenderHealthBar(EntityBodyguard entityIn)
     {
-        boolean alwaysRender = true; // TODO: config (client and/or server)
+        boolean alwaysRender = ModConfigClient.DISPLAY_HEALTH_BAR;
         return alwaysRender || entityIn == this.renderManager.pointedEntity;
     }
 

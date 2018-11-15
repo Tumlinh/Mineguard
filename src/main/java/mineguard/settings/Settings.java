@@ -3,10 +3,10 @@ package mineguard.settings;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import io.netty.buffer.ByteBuf;
+import mineguard.Mineguard;
 import mineguard.Troop;
-import mineguard.init.ModConfig;
+import mineguard.init.ModConfigServer;
 import mineguard.util.NBTUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,6 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class Settings
 {
     private Troop troop;
+    private File settingsFile = new File(Mineguard.instance.configDirectory, ModConfigServer.SETTINGS_FILE);
 
     // Settings
     private Behaviour behaviour = Behaviour.DEFENSIVE;
@@ -188,11 +189,10 @@ public class Settings
         // Read full settings from NBT
         NBTTagCompound mainCompound = new NBTTagCompound();
         try {
-            mainCompound = NBTUtil.readNBT(ModConfig.SETTINGS_FILE);
+            mainCompound = NBTUtil.readNBT(settingsFile);
         } catch (IOException e) {
-            File file = new File(ModConfig.SETTINGS_FILE);
             try {
-                file.createNewFile();
+                settingsFile.createNewFile();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -201,7 +201,7 @@ public class Settings
         // Write new settings
         mainCompound.setTag(troop.getMasterName(), playerSettings);
         try {
-            NBTUtil.writeNBT(ModConfig.SETTINGS_FILE, mainCompound);
+            NBTUtil.writeNBT(settingsFile, mainCompound);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -211,7 +211,7 @@ public class Settings
     {
         NBTTagCompound compound = null;
         try {
-            compound = NBTUtil.readNBT(ModConfig.SETTINGS_FILE);
+            compound = NBTUtil.readNBT(settingsFile);
         } catch (IOException e) {
             e.printStackTrace();
             return;

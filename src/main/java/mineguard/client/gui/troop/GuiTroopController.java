@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import mineguard.client.ClientProxy;
 import mineguard.client.gui.troop.button.GuiButtonSize;
+import mineguard.init.ModConfigClient;
 import mineguard.client.gui.troop.button.GuiButtonSetting;
 import mineguard.client.gui.Shortcut;
 import mineguard.client.gui.troop.button.GuiButtonBehaviour;
@@ -120,7 +121,7 @@ public class GuiTroopController extends GuiScreen
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        int alpha = 0x50; // TODO: client config
+        int alpha = ModConfigClient.TROOP_CONTROLLER_ALPHA;
         int color = alpha << 24;
         Gui.drawRect(guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, color);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);

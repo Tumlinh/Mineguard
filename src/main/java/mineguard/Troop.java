@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import mineguard.entity.EntityBodyguard;
-import mineguard.init.ModConfig;
+import mineguard.init.ModConfigServer;
 import mineguard.settings.*;
 import mineguard.util.EntityUtil;
 import mineguard.util.NBTUtil;
@@ -137,7 +137,7 @@ public class Troop
     public void summonBodyguards(World world, BlockPos pos, int count)
             throws TroopInOtherDimensionException, BodyguardOverflowException
     {
-        if (bodyguards.size() + count > ModConfig.MAX_TROOP_SIZE)
+        if (bodyguards.size() + count > ModConfigServer.MAX_TROOP_SIZE)
             throw new BodyguardOverflowException();
 
         // Check dimension
@@ -233,7 +233,7 @@ public class Troop
         if (!masterName.equals(name)) {
             Troop receivingTroop = Troop.getTroop(name);
 
-            if (receivingTroop.bodyguards.size() + this.bodyguards.size() > ModConfig.MAX_TROOP_SIZE)
+            if (receivingTroop.bodyguards.size() + this.bodyguards.size() > ModConfigServer.MAX_TROOP_SIZE)
                 throw new BodyguardOverflowException();
 
             // Get bodyguards

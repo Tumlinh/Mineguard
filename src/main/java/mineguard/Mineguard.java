@@ -1,5 +1,6 @@
 package mineguard;
 
+import java.io.File;
 import mineguard.client.gui.troop.GuiHandler;
 import mineguard.command.CommandBodyguard;
 import net.minecraftforge.fml.common.Mod;
@@ -25,9 +26,12 @@ public class Mineguard
     @SidedProxy(clientSide = "mineguard.client.ClientProxy", serverSide = "mineguard.CommonProxy")
     public static CommonProxy proxy;
 
+    public File configDirectory;
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        configDirectory = new File(event.getModConfigurationDirectory(), Mineguard.MODID);
         proxy.preInit(event);
     }
 

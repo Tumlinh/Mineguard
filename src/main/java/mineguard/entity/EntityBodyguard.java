@@ -10,7 +10,7 @@ import mineguard.client.gui.troop.GuiHandler;
 import mineguard.entity.ai.EntityAIAttackMelee;
 import mineguard.entity.ai.EntityAIBehaviour;
 import mineguard.entity.ai.EntityAIReform;
-import mineguard.init.ModConfig;
+import mineguard.init.ModConfigServer;
 import mineguard.util.EntityUtil;
 import mineguard.util.ItemUtil;
 import mineguard.util.ItemUtil.WeaponClass;
@@ -189,7 +189,7 @@ public class EntityBodyguard extends EntityCreature
         this.tasks.taskEntries.clear();
         this.targetTasks.taskEntries.clear();
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_NAVIGATION_SPEED, false));
+        this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfigServer.BODYGUARD_NAVIGATION_SPEED, false));
         this.tasks.addTask(3, reformTask);
         this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
         this.targetTasks.addTask(1, behaviourTask);
@@ -200,13 +200,17 @@ public class EntityBodyguard extends EntityCreature
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_DAMAGE, ModConfig.BODYGUARD_ATTACK_DAMAGE);
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_SPEED, ModConfig.BODYGUARD_ATTACK_SPEED);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_DAMAGE,
+                ModConfigServer.BODYGUARD_ATTACK_DAMAGE);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_SPEED,
+                ModConfigServer.BODYGUARD_ATTACK_SPEED);
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.KNOCKBACK_RESISTANCE,
-                ModConfig.BODYGUARD_KNOCKBACK_RESISTANCE);
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MAX_HEALTH, ModConfig.BODYGUARD_MAX_HEALTH);
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MOVEMENT_SPEED, ModConfig.BODYGUARD_MOVEMENT_SPEED);
-        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.FOLLOW_RANGE, ModConfig.BODYGUARD_FOLLOW_RANGE);
+                ModConfigServer.BODYGUARD_KNOCKBACK_RESISTANCE);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MAX_HEALTH, ModConfigServer.BODYGUARD_MAX_HEALTH);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.MOVEMENT_SPEED,
+                ModConfigServer.BODYGUARD_MOVEMENT_SPEED);
+        EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.FOLLOW_RANGE,
+                ModConfigServer.BODYGUARD_FOLLOW_RANGE);
     }
 
     protected void updateAITasks()
@@ -246,7 +250,7 @@ public class EntityBodyguard extends EntityCreature
             timeSinceRegeneration++;
 
             // Regenerate hitpoints
-            if (timeSinceRegeneration >= ModConfig.BODYGUARD_REGENERATION_TIME) {
+            if (timeSinceRegeneration >= ModConfigServer.BODYGUARD_REGENERATION_TIME) {
                 this.heal(1.0F);
                 timeSinceRegeneration = 0;
             }

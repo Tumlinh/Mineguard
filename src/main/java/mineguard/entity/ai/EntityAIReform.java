@@ -3,7 +3,7 @@ package mineguard.entity.ai;
 import mineguard.Troop;
 import mineguard.Troop.BodyguardNotFoundException;
 import mineguard.entity.EntityBodyguard;
-import mineguard.init.ModConfig;
+import mineguard.init.ModConfigServer;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -53,7 +53,7 @@ public class EntityAIReform extends EntityAIBase
             }
 
             if (bg.getDistance(pos.x, pos.y, pos.z) <= maxDist) {
-                bg.getNavigator().tryMoveToXYZ(pos.x, pos.y, pos.z, ModConfig.BODYGUARD_NAVIGATION_SPEED);
+                bg.getNavigator().tryMoveToXYZ(pos.x, pos.y, pos.z, ModConfigServer.BODYGUARD_NAVIGATION_SPEED);
             } else {
                 // Look for friendly block in a cube around expected position
                 int x = MathHelper.floor(pos.x);

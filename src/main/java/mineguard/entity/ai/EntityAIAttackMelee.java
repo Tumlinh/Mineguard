@@ -1,7 +1,7 @@
 package mineguard.entity.ai;
 
 import mineguard.entity.EntityBodyguard;
-import mineguard.init.ModConfig;
+import mineguard.init.ModConfigServer;
 import mineguard.util.ItemUtil;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumHand;
@@ -15,7 +15,7 @@ public class EntityAIAttackMelee extends net.minecraft.entity.ai.EntityAIAttackM
     {
         super(bodyguard, speedIn, useLongMemory);
         attacker = bodyguard;
-        defenseRatio = ModConfig.BODYGUARD_DEFENSE_RATIO;
+        defenseRatio = ModConfigServer.BODYGUARD_DEFENSE_RATIO;
     }
 
     @Override
