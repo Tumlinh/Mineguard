@@ -189,7 +189,7 @@ public class EntityBodyguard extends EntityCreature
         this.tasks.taskEntries.clear();
         this.targetTasks.taskEntries.clear();
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_SPEED_TARGET, false));
+        this.tasks.addTask(2, new EntityAIAttackMelee(this, ModConfig.BODYGUARD_NAVIGATION_SPEED, false));
         this.tasks.addTask(3, reformTask);
         this.tasks.addTask(4, new EntityAIOpenDoor(this, true));
         this.targetTasks.addTask(1, behaviourTask);

@@ -53,7 +53,7 @@ public class EntityAIReform extends EntityAIBase
             }
 
             if (bg.getDistance(pos.x, pos.y, pos.z) <= maxDist) {
-                bg.getNavigator().tryMoveToXYZ(pos.x, pos.y, pos.z, ModConfig.BODYGUARD_SPEED_TARGET);
+                bg.getNavigator().tryMoveToXYZ(pos.x, pos.y, pos.z, ModConfig.BODYGUARD_NAVIGATION_SPEED);
             } else {
                 // Look for friendly block in a cube around expected position
                 int x = MathHelper.floor(pos.x);

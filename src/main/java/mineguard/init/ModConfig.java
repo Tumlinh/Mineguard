@@ -14,7 +14,7 @@ public class ModConfig
     public static float BODYGUARD_KNOCKBACK_RESISTANCE = 0.0F;
     public static float BODYGUARD_MAX_HEALTH = 20;
     public static float BODYGUARD_MOVEMENT_SPEED = 0.3F;
-    public static float BODYGUARD_SPEED_TARGET = 1.4F;
+    public static float BODYGUARD_NAVIGATION_SPEED = 1.2F;
     public static float BODYGUARD_FOLLOW_RANGE = 32;
     public static int BODYGUARD_REGENERATION_TIME = 1200;
     public static float BODYGUARD_DEFENSE_RATIO = 0.5F;
@@ -42,7 +42,7 @@ public class ModConfig
                 Float.MAX_VALUE, "");
         BODYGUARD_MOVEMENT_SPEED = config.getFloat("BodyguardMovementSpeed", "bodyguard", BODYGUARD_MOVEMENT_SPEED, 0,
                 Float.MAX_VALUE, "");
-        BODYGUARD_SPEED_TARGET = config.getFloat("BodyguardSpeedTarget", "bodyguard", BODYGUARD_SPEED_TARGET, 0,
+        BODYGUARD_NAVIGATION_SPEED = config.getFloat("BodyguardSpeedTarget", "bodyguard", BODYGUARD_NAVIGATION_SPEED, 0,
                 Float.MAX_VALUE, "");
         BODYGUARD_FOLLOW_RANGE = config.getFloat("BodyguardFollowRange", "bodyguard", BODYGUARD_FOLLOW_RANGE, 0,
                 Float.MAX_VALUE, "");
