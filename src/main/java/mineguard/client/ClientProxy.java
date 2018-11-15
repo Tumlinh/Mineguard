@@ -21,6 +21,7 @@ public class ClientProxy extends CommonProxy
     public static KeyBinding TROOP_CONTROLLER_KEYBINDING = new KeyBinding("key.troopController", Keyboard.KEY_G,
             "key.categories.ui");
     private static Settings SETTINGS;
+    public static ModConfigClient clientConfig;
 
     @Override
     public void preInit(FMLPreInitializationEvent event)
@@ -29,9 +30,10 @@ public class ClientProxy extends CommonProxy
 
         // Load configuration
         File configFile = new File(Mineguard.instance.configDirectory, "client.cfg");
-        new ModConfigClient(configFile);
+        clientConfig = new ModConfigClient(configFile);
 
         // Register events
+        MinecraftForge.EVENT_BUS.register(clientConfig);
         MinecraftForge.EVENT_BUS.register(new TextureRegister());
         MinecraftForge.EVENT_BUS.register(new KeyboardEvents());
 
