@@ -200,6 +200,11 @@ public class EntityGuard extends EntityCreature
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
+        this.applyAttributes();
+    }
+
+    private void applyAttributes()
+    {
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_DAMAGE, ModConfigServer.GUARD_ATTACK_DAMAGE);
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.ATTACK_SPEED, ModConfigServer.GUARD_ATTACK_SPEED);
         EntityUtil.setEntityAttribute(this, SharedMonsterAttributes.KNOCKBACK_RESISTANCE,
@@ -305,6 +310,9 @@ public class EntityGuard extends EntityCreature
         }
         if (compound.hasKey("LastRegenerationTime", new NBTTagLong(0).getId()))
             timeSinceRegeneration = compound.getLong("TimeSinceRegeneration");
+
+        // Apply entity attributes again
+        this.applyAttributes();
     }
 
     @Override
