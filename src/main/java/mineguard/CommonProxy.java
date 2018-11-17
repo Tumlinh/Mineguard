@@ -18,12 +18,12 @@ public class CommonProxy
     public void preInit(FMLPreInitializationEvent event)
     {
         // Load configuration
-        File configFile = new File(Mineguard.instance.configDirectory, "gameplay.cfg");
+        File configFile = new File(Mineguard.configDirectory, "gameplay.cfg");
         new ModConfigServer(configFile);
 
         // Register entities
-        EntityRegistry.registerModEntity(new ResourceLocation(Mineguard.MODID, "guard"), EntityGuard.class,
-                "guard", 0, Mineguard.instance, 80, 3, false, 0, 0);
+        EntityRegistry.registerModEntity(new ResourceLocation(Mineguard.MODID, "guard"), EntityGuard.class, "guard", 0,
+                Mineguard.instance, 80, 3, false, 0, 0);
 
         // Register events
         MinecraftForge.EVENT_BUS.register(new EntityEvents());

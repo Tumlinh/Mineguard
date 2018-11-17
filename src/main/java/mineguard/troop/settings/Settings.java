@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class Settings
 {
     private Troop troop;
-    private File settingsFile = new File(Mineguard.instance.configDirectory, ModConfigServer.SETTINGS_FILE);
+    private File settingsFile = new File(Mineguard.configDirectory, ModConfigServer.SETTINGS_FILE);
 
     // Settings
     private Behaviour behaviour = Behaviour.DEFENSIVE;

@@ -21,13 +21,13 @@ public class Mineguard
     public static final String VERSION = "@MOD_VERSION@";
     public static final String GUI_FACTORY = "mineguard.client.gui.ModGuiFactory";
 
+    public static File configDirectory;
+
     @Instance(MODID)
     public static Mineguard instance;
 
     @SidedProxy(clientSide = "mineguard.client.ClientProxy", serverSide = "mineguard.CommonProxy")
     public static CommonProxy proxy;
-
-    public File configDirectory;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)

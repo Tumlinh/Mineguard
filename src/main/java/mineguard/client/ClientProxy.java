@@ -29,7 +29,7 @@ public class ClientProxy extends CommonProxy
         super.preInit(event);
 
         // Load configuration
-        File configFile = new File(Mineguard.instance.configDirectory, "client.cfg");
+        File configFile = new File(Mineguard.configDirectory, "client.cfg");
         clientConfig = new ModConfigClient(configFile);
 
         // Register events
