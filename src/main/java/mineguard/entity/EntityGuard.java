@@ -506,7 +506,7 @@ public class EntityGuard extends EntityCreature
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return this.isEntityAlive() && dataManager.get(MASTER_NAME) == playerIn.getName();
+        return this.isEntityAlive() && dataManager.get(MASTER_NAME).equals(playerIn.getName());
     }
 
     @Override
