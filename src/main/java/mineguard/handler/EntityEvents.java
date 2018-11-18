@@ -1,6 +1,5 @@
 package mineguard.handler;
 
-import mineguard.client.ClientProxy;
 import mineguard.network.MessageTroopSettings;
 import mineguard.network.PacketHandler;
 import mineguard.network.MessageTroopSettings.Type;
@@ -27,10 +26,8 @@ public class EntityEvents
 
             if (FMLCommonHandler.instance().getSide() == Side.CLIENT) {
                 // Fetch settings from server
-                if (ClientProxy.getSettings() == null) {
-                    MessageTroopSettings message = new MessageTroopSettings(Type.REQ, null);
-                    PacketHandler.INSTANCE.sendToServer(message);
-                }
+                MessageTroopSettings message = new MessageTroopSettings(Type.REQ, null);
+                PacketHandler.INSTANCE.sendToServer(message);
             }
         }
     }
