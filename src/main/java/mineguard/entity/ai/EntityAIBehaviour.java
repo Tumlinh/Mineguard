@@ -86,6 +86,8 @@ public class EntityAIBehaviour extends EntityAIBase
 
             if (!nearbyHostileTargets.isEmpty())
                 attackEntity(nearbyHostileTargets.get(0), guard);
+            else
+                guard.setAttackTarget((EntityLivingBase) null);
         }
 
         else if (troop.getSettings().getBehaviour() == Behaviour.STILL) {
