@@ -107,8 +107,7 @@ public class RenderGuard extends RenderLiving<EntityGuard>
     }
 
     @Override
-    protected void renderLivingLabel(EntityGuard entityIn, String str, double x, double y, double z,
-            int maxDistance)
+    protected void renderLivingLabel(EntityGuard entityIn, String str, double x, double y, double z, int maxDistance)
     {
         double d0 = entityIn.getDistanceSq(this.renderManager.renderViewEntity);
         if (d0 <= (double) (maxDistance * maxDistance)) {
@@ -139,7 +138,7 @@ public class RenderGuard extends RenderLiving<EntityGuard>
             float f = entityIn.height + 0.5F - (isSneaking ? 0.25F : 0.0F);
 
             int barLength = 40;
-            int greenLength = Math
+            int hpLength = Math
                     .round(barLength * entityIn.getDataManager().get(EntityGuard.HEALTH) / entityIn.getMaxHealth());
 
             // Get troop color from helmet (disgusting but avoids sync)
@@ -151,7 +150,7 @@ public class RenderGuard extends RenderLiving<EntityGuard>
             // Force color opacity
             barColor = (0xff << 24) + (barColor & 0xffffff);
 
-            if (entityIn.getDataManager().get(EntityGuard.MASTER_NAME) != "") {
+            if (!entityIn.getDataManager().get(EntityGuard.MASTER_NAME).isEmpty()) {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(x, y + f, z);
                 GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -161,8 +160,8 @@ public class RenderGuard extends RenderLiving<EntityGuard>
                 GlStateManager.translate(0, entityIn.height - 8, 0);
                 GlStateManager.disableLighting();
                 GlStateManager.disableDepth();
-                Gui.drawRect(barLength / 2 - greenLength, 0, barLength / 2, barLength / 7, barColor);
-                Gui.drawRect(-barLength / 2, 0, barLength / 2 - greenLength, barLength / 7, 0x40000000);
+                Gui.drawRect(barLength / 2 - hpLength, 0, barLength / 2, barLength / 7, barColor);
+                Gui.drawRect(-barLength / 2, 0, barLength / 2 - hpLength, barLength / 7, 0x40000000);
                 GlStateManager.enableDepth();
                 GlStateManager.enableLighting();
                 GlStateManager.popMatrix();

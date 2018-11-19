@@ -387,7 +387,7 @@ public class EntityGuard extends EntityCreature
     protected boolean canEquipItem(ItemStack stack)
     {
         // Prevent replacing helmet in case one is picked up
-        return dataManager.get(MASTER_NAME) != "" || getSlotForItemStack(stack) != EntityEquipmentSlot.HEAD;
+        return !dataManager.get(MASTER_NAME).isEmpty() || getSlotForItemStack(stack) != EntityEquipmentSlot.HEAD;
     }
 
     @Override
@@ -518,7 +518,7 @@ public class EntityGuard extends EntityCreature
 
         Item item = itemStack.getItem();
         if (!itemStack.isEmpty()) {
-            if (dataManager.get(MASTER_NAME) == "" && item == Items.GOLD_INGOT) {
+            if (dataManager.get(MASTER_NAME).isEmpty() && item == Items.GOLD_INGOT) {
                 // Give guard to player
                 if (!player.capabilities.isCreativeMode)
                     itemStack.shrink(1);
